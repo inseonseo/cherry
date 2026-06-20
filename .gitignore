@@ -5,11 +5,15 @@ __pycache__/
 .DS_Store
 .claude/
 case/
+test/
 static/Demo/
 static/Demo2/
+static/annot/
+static/demo3/
 docs/PNG/
 docs/new/
-test/
+.tmp/
 deploy.zip
+setup_previews.py
 *.log
 .vscode/
