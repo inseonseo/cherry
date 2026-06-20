@@ -10,8 +10,8 @@ static/Demo/
 static/Demo2/
 static/annot/
 static/demo3/
-docs/PNG/
-docs/new/
+docs/
+!docs/demo3/
 .tmp/
 deploy.zip
 setup_previews.py
