@@ -1,0 +1,16 @@
+{
+  "서류ID": "투자자정보확인서",
+  "서류명": "투자자정보 확인서(투자성상품)",
+  "pages": [
+    {
+      "page": 1,
+      "image": "/static/previews/투자자정보확인서_p1.png",
+      "fields": []
+    },
+    {
+      "page": 2,
+      "image": "/static/previews/투자자정보확인서_p2.png",
+      "fields": []
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+.env
+.env.local
+__pycache__/
+*.pyc
+.DS_Store
+.claude/
+case/
+static/Demo/
+static/Demo2/
+docs/PNG/
+docs/new/
+test/
+deploy.zip
+*.log
+.vscode/

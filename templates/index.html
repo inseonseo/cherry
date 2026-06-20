@@ -1,0 +1,2397 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CHERRY — 판매서류 자동점검</title>
+<link rel="icon" href="/static/icon.png" type="image/png">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/tabler-icons.min.css">
+<style>
+:root {
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --color-background-primary: #ffffff;
+  --color-background-secondary: #f4f6f9;
+  --color-text-primary: #0f172a;
+  --color-text-secondary: #64748b;
+  --color-text-tertiary: #94a3b8;
+  --color-border-primary: #374151;
+  --color-border-secondary: #e2e8f0;
+  --color-border-tertiary: #f1f5f9;
+  --color-accent: #C0392B;
+  --color-accent-light: #FAEAE9;
+  --color-accent-dark: #6D2B3D;
+  --cherry-stem: #27AE60;
+  --border-radius-sm: 4px;
+  --border-radius-md: 8px;
+  --border-radius-lg: 14px;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.08), 0 2px 6px rgba(0,0,0,0.04);
+  --shadow-lg: 0 10px 40px rgba(0,0,0,0.12), 0 4px 12px rgba(0,0,0,0.06);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--color-background-secondary)}
+.app{font-family:var(--font-sans);min-height:100vh}
+.nav{background:rgba(255,255,255,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--color-border-tertiary);padding:0 40px;display:flex;align-items:center;justify-content:space-between;height:64px;position:sticky;top:0;z-index:10;box-shadow:0 1px 0 rgba(0,0,0,0.04)}
+.nav-logo{font-size:17px;font-weight:700;color:var(--color-text-primary);display:flex;align-items:center;gap:10px;letter-spacing:-0.3px}
+.nav-logo-mark{width:32px;height:32px;background:linear-gradient(135deg,#C0392B,#6D2B3D);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px}
+.page{display:none;max-width:1280px;margin:0 auto}
+.page.active{display:block}
+.page-inner{padding:32px 36px}
+.card{background:var(--color-background-primary);border:1px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1.6rem 1.8rem;margin-bottom:16px;box-shadow:var(--shadow-sm)}
+.label{font-size:13px;font-weight:600;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:12px}
+.sec-title{font-size:24px;font-weight:700;color:var(--color-text-primary);margin-bottom:8px;letter-spacing:-0.4px}
+.sec-sub{font-size:15px;color:var(--color-text-secondary);margin-bottom:22px;line-height:1.6}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+select{width:100%;font-size:14px;padding:10px 12px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary);cursor:pointer}
+.sel-label{font-size:14px;color:var(--color-text-secondary);margin-bottom:8px}
+.btn-p{background:#6D2B3D;color:#FAEAE9;border:none;border-radius:var(--border-radius-md);padding:13px 28px;font-size:15px;font-weight:500;cursor:pointer;width:100%;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-p:hover{background:#4A1628}
+.btn-s{background:var(--color-background-primary);color:var(--color-text-primary);border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:13px 28px;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;width:100%}
+.upload-zone{border:1.5px dashed var(--color-border-secondary);border-radius:var(--border-radius-lg);padding:3.5rem;text-align:center;background:var(--color-background-secondary);cursor:pointer;margin-bottom:16px;transition:border-color 0.15s}
+.upload-zone:hover,.upload-zone.drag{border-color:#6D2B3D;background:#FDF3F2}
+.upload-icon{font-size:36px;color:var(--color-text-secondary);margin-bottom:10px}
+.upload-text{font-size:15px;color:var(--color-text-secondary)}
+.upload-hint{font-size:13px;color:var(--color-text-tertiary);margin-top:6px}
+.upload-name{font-size:14px;color:#6D2B3D;font-weight:500;margin-top:10px}
+.step-row{display:flex;gap:10px;margin-bottom:24px}
+.step{flex:1;padding:13px 14px;border-radius:var(--border-radius-md);background:var(--color-background-secondary);text-align:center}
+.step.done{background:#FAEAE9}.step.active{background:#6D2B3D}
+.step.active .slabel,.step.active .sname{color:#FAEAE9}
+.step.done .slabel,.step.done .sname{color:#4A1628}
+.slabel{font-size:12px;color:var(--color-text-secondary);margin-bottom:3px}
+.sname{font-size:13px;font-weight:500;color:var(--color-text-primary)}
+.agent-card{border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:16px;margin-bottom:10px;display:flex;align-items:center;gap:14px}
+.aicon{width:42px;height:42px;border-radius:var(--border-radius-md);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.aicon.done{background:#EAF3DE;color:#3B6D11}.aicon.active{background:#FAEAE9;color:#6D2B3D}.aicon.wait{background:var(--color-background-secondary);color:var(--color-text-secondary)}
+.ainfo{flex:1}
+.aname{font-size:15px;font-weight:600;color:var(--color-text-primary)}
+.adesc{font-size:14px;color:var(--color-text-secondary);margin-top:3px}
+.astatus{font-size:14px;font-weight:600}
+.astatus.done{color:#3B6D11}.astatus.active{color:#6D2B3D}.astatus.wait{color:var(--color-text-tertiary)}
+.pbar{height:4px;background:var(--color-background-secondary);border-radius:2px;margin-top:8px;overflow:hidden}
+.pfill{height:100%;background:#6D2B3D;border-radius:2px;width:0%;transition:width 0.5s}
+.rh{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px}
+.verdict{display:inline-flex;align-items:center;gap:7px;padding:8px 18px;border-radius:var(--border-radius-md);font-size:14px;font-weight:600}
+.verdict.fail{background:#FCEBEB;color:#A32D2D}.verdict.pass{background:#EAF3DE;color:#3B6D11}.verdict.warn{background:#FAEEDA;color:#633806}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
+.stat{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:16px;text-align:center}
+.stat-n{font-size:34px;font-weight:700}.stat-l{font-size:13px;color:var(--color-text-secondary);margin-top:4px}
+.ci{display:flex;align-items:flex-start;gap:12px;padding:13px 0;border-bottom:0.5px solid var(--color-border-tertiary)}
+.ci:last-child{border-bottom:none}
+.cicon{font-size:18px;margin-top:1px;flex-shrink:0}
+.cicon.ok{color:#3B6D11}.cicon.err{color:#A32D2D}.cicon.warn{color:#854F0B}
+.clabel{font-size:14px;font-weight:500;color:var(--color-text-primary)}
+.cdesc{font-size:13px;color:var(--color-text-secondary);margin-top:3px}
+.hbox{border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:14px;margin-top:12px;background:var(--color-background-secondary)}
+.htitle{font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.btnrow{display:flex;gap:8px;margin-top:8px}
+.btn-approve{background:#3B6D11;color:#EAF3DE;border:none;border-radius:var(--border-radius-md);padding:8px 16px;font-size:13px;cursor:pointer;flex:1}
+.btn-approve:hover{background:#2d5509}
+.btn-reject{background:var(--color-background-primary);color:#A32D2D;border:0.5px solid #A32D2D;border-radius:var(--border-radius-md);padding:8px 16px;font-size:13px;cursor:pointer;flex:1}
+.btn-dl{background:var(--color-background-primary);color:var(--color-text-primary);border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:8px 16px;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:6px}
+.btn-dl:hover{background:var(--color-background-secondary)}
+.gi{border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:16px;margin-bottom:10px}
+.gdoc{font-size:14px;font-weight:500;color:var(--color-text-primary);margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.gchecks{list-style:none;padding:0}
+.gchecks li{font-size:13px;color:var(--color-text-secondary);padding:4px 0 4px 18px;position:relative}
+.gchecks li::before{content:"·";position:absolute;left:5px;color:var(--color-border-secondary)}
+.badge{font-size:13px;padding:3px 10px;border-radius:var(--border-radius-md);font-weight:500}
+.bb{background:#FAEAE9;color:#4A1628}.ba{background:#FAEEDA;color:#633806}
+.voice-zone{border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:14px;display:flex;align-items:center;gap:12px;margin-bottom:12px;background:var(--color-background-secondary)}
+.vicon{width:40px;height:40px;border-radius:50%;background:#FAEAE9;display:flex;align-items:center;justify-content:center;color:#6D2B3D;font-size:20px;flex-shrink:0}
+.div{border:none;border-top:0.5px solid var(--color-border-tertiary);margin:12px 0}
+.main-hero{padding:3rem 40px 2rem;text-align:left}
+.main-hero-badge{display:inline-flex;align-items:center;gap:6px;background:var(--color-accent-light);border:1px solid #F4A09A;border-radius:100px;padding:6px 16px;font-size:13px;font-weight:600;color:var(--color-accent);margin-bottom:18px;letter-spacing:0.04em}
+.main-hero h1{font-size:38px;font-weight:800;color:var(--color-text-primary);margin-bottom:10px;letter-spacing:-0.8px;line-height:1.2}
+.main-hero p{font-size:16px;color:var(--color-text-secondary);line-height:1.6}
+.main-stats{display:flex;gap:16px;margin-top:28px;flex-wrap:wrap}
+.main-stat{background:var(--color-background-primary);border:1px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:16px 24px;box-shadow:var(--shadow-sm)}
+.main-stat-l{font-size:14px;color:var(--color-text-secondary)}
+/* ── 업무 흐름 배너 ── */
+.workflow-banner{display:flex;align-items:stretch;gap:0;padding:0 40px 24px;overflow:hidden}
+.workflow-phase{flex:1;padding:24px 26px;border-radius:var(--border-radius-lg);position:relative;display:flex;flex-direction:column;gap:12px}
+.workflow-phase.pre{background:linear-gradient(135deg,#FDF3F2,#FAEAE9);border:1.5px solid #F4A09A}
+.workflow-phase.post{background:linear-gradient(135deg,#f0f9ff,#e0f2fe);border:1.5px solid #7dd3fc}
+.workflow-phase-label{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;display:flex;align-items:center;gap:6px}
+.workflow-phase.pre .workflow-phase-label{color:#C0392B}
+.workflow-phase.post .workflow-phase-label{color:#0369a1}
+.workflow-phase-title{font-size:20px;font-weight:700;color:var(--color-text-primary);letter-spacing:-0.3px}
+.workflow-phase-desc{font-size:14px;color:var(--color-text-secondary);line-height:1.5}
+.workflow-divider{display:flex;align-items:center;padding:0 16px;color:var(--color-text-tertiary);font-size:26px;flex-shrink:0}
+.workflow-cards{display:flex;gap:10px;flex-wrap:wrap}
+.wf-card{background:rgba(255,255,255,0.8);border-radius:var(--border-radius-md);padding:13px 16px;cursor:pointer;display:flex;align-items:center;gap:10px;border:1px solid rgba(255,255,255,0.9);transition:all 0.2s;flex:1;min-width:130px}
+.wf-card:hover{background:#fff;box-shadow:var(--shadow-sm);transform:translateY(-1px)}
+.wf-card-icon{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.workflow-phase.pre .wf-card-icon{background:#C0392B;color:#fff}
+.workflow-phase.post .wf-card-icon{background:#0369a1;color:#fff}
+.wf-card-title{font-size:14px;font-weight:600;color:var(--color-text-primary)}
+.wf-card-sub{font-size:13px;color:var(--color-text-secondary);margin-top:2px}
+/* ── 상세 카드 (레거시, 메인 페이지에서 제거됨) ── */
+.main-cards{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:0 28px 28px}
+.main-card{background:var(--color-background-primary);border:1px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1.6rem 1.5rem;cursor:pointer;text-align:left;transition:all 0.2s;box-shadow:var(--shadow-sm);position:relative;overflow:hidden}
+.main-card.wide{grid-column:1 / -1;display:flex;align-items:center;gap:24px}
+.main-card.wide .main-card-desc{margin-bottom:0}
+.main-card.wide .main-card-btn{margin-top:0;border-top:none;padding-top:0;width:auto;margin-left:auto;flex-shrink:0;white-space:nowrap}
+.main-card::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#C0392B,#6D2B3D);transform:scaleX(0);transform-origin:left;transition:transform 0.2s}
+.main-card:hover{border-color:#F4A09A;box-shadow:var(--shadow-md);transform:translateY(-2px)}
+.main-card:hover::after{transform:scaleX(1)}
+.main-card-icon{width:44px;height:44px;border-radius:11px;background:var(--color-accent-light);display:flex;align-items:center;justify-content:center;font-size:21px;color:var(--color-accent);margin-bottom:14px;flex-shrink:0}
+.main-card.wide .main-card-icon{margin-bottom:0}
+.main-card-title{font-size:17px;font-weight:700;color:var(--color-text-primary);margin-bottom:7px;letter-spacing:-0.3px}
+.main-card-desc{font-size:13.5px;color:var(--color-text-secondary);line-height:1.6}
+.main-card-btn{margin-top:18px;display:inline-flex;align-items:center;gap:5px;font-size:13px;color:var(--color-accent);font-weight:600;border-top:1px solid var(--color-border-tertiary);padding-top:14px;width:100%}
+.breadcrumb{font-size:14px;color:var(--color-text-secondary);margin-bottom:16px;display:flex;align-items:center;gap:6px;cursor:pointer}
+.breadcrumb:hover{color:var(--color-text-primary)}
+.report-box{background:var(--color-background-secondary);border-radius:var(--border-radius-lg);padding:20px;border:0.5px solid var(--color-border-tertiary)}
+.report-header{background:#6D2B3D;border-radius:var(--border-radius-md);padding:16px;margin-bottom:16px;color:#FAEAE9}
+.report-title{font-size:15px;font-weight:500;margin-bottom:4px}
+.report-meta{font-size:12px;opacity:0.8}
+.report-section{margin-bottom:12px}
+.report-section-title{font-size:11px;font-weight:500;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px}
+.report-table{width:100%;border-collapse:collapse;font-size:12px}
+.report-table th{background:#FAEAE9;color:#4A1628;padding:6px 10px;text-align:left;font-weight:500}
+.report-table td{padding:6px 10px;border-bottom:0.5px solid var(--color-border-tertiary);color:var(--color-text-primary)}
+.report-table tr:last-child td{border-bottom:none}
+.report-verdict{background:#FCEBEB;border-radius:var(--border-radius-md);padding:12px;display:flex;align-items:center;justify-content:space-between}
+.report-verdict.pass{background:#EAF3DE}
+.report-verdict.warn{background:#FAEEDA}
+.sign-box{border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:12px;margin-top:12px}
+.sign-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.sign-field{border-bottom:0.5px solid var(--color-border-secondary);padding-bottom:4px}
+.sign-label{font-size:10px;color:var(--color-text-secondary)}
+.sign-val{font-size:12px;color:var(--color-text-tertiary);margin-top:4px;min-height:20px}
+.doc-section-title{font-size:13px;font-weight:500;color:var(--color-text-secondary);margin:14px 0 10px;padding-top:14px;border-top:0.5px solid var(--color-border-tertiary)}
+.doc-section-title:first-child{border-top:none;padding-top:0;margin-top:0}
+.guide-empty{padding:24px;text-align:center;font-size:13px;color:var(--color-text-tertiary)}
+.error-banner{background:#FCEBEB;border:0.5px solid #f5c6c6;border-radius:var(--border-radius-md);padding:12px 14px;font-size:13px;color:#A32D2D;margin-bottom:12px;display:none}
+@keyframes pulse-err{0%,100%{box-shadow:0 0 0 0 rgba(163,45,45,0.45)}50%{box-shadow:0 0 0 7px rgba(163,45,45,0)}}
+.field-err{animation:pulse-err 1.6s infinite;border:2.5px solid #A32D2D!important;background:rgba(163,45,45,0.12)!important}
+.field-ok{border:2px solid #3B6D11!important;background:rgba(59,109,17,0.07)!important}
+.ann-err-item{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:#FCEBEB;border-radius:8px;margin-bottom:8px}
+.ann-ok-item{display:flex;align-items:flex-start;gap:8px;padding:8px 12px;background:#EAF3DE;border-radius:8px;margin-bottom:6px}
+.page-view-btn{background:var(--color-background-secondary);border:0.5px solid var(--color-border-secondary);border-radius:5px;padding:3px 10px;font-size:11px;color:var(--color-text-secondary);cursor:pointer;flex-shrink:0;white-space:nowrap}
+.page-view-btn:hover{background:#FAEAE9;color:#6D2B3D;border-color:#F4A09A}
+.page-view-btn.err-btn{border-color:#f5c6c6;color:#A32D2D}
+.page-view-btn.err-btn:hover{background:#FCEBEB}
+</style>
+</head>
+<body>
+<div class="app">
+  <nav class="nav">
+    <div class="nav-logo" style="cursor:pointer" onclick="go('main')">
+      <img src="/static/logo.png" alt="CHERRY" style="height:36px;object-fit:contain;display:block">
+      <span style="font-size:18px;font-weight:800;color:var(--color-text-primary);letter-spacing:-0.5px">c<span style="color:var(--color-accent)">HERRY</span></span>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px">
+      <div style="font-size:14px;color:var(--color-text-secondary)" id="nav-breadcrumb"></div>
+      <button onclick="go('dashboard')" style="display:flex;align-items:center;gap:7px;background:#f0fdf4;color:#27AE60;border:1px solid #27AE60;border-radius:8px;padding:8px 16px;font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap">
+        <i class="ti ti-chart-bar" style="font-size:15px"></i> 점검 현황
+      </button>
+    </div>
+  </nav>
+
+  <!-- ① 메인 -->
+  <div id="main" class="page active">
+    <div class="main-hero">
+      <div class="main-hero-badge"><i class="ti ti-sparkles" style="font-size:12px"></i> Check Human Error, Review &amp; Report with you</div>
+      <h1>판매서류 자동점검 시스템</h1>
+    </div>
+
+    <!-- 업무 흐름 배너 -->
+    <div class="workflow-banner">
+      <!-- 사전 영역 -->
+      <div class="workflow-phase pre">
+        <div class="workflow-phase-label">
+          <i class="ti ti-clock-hour-3" style="font-size:13px"></i> 사전 — 상담 전 준비
+        </div>
+        <div class="workflow-phase-title">서류 준비 &amp; 가이드</div>
+        <div class="workflow-phase-desc">필요 서류와 체크항목을 미리 파악하세요</div>
+        <div class="workflow-cards">
+          <div class="wf-card" onclick="go('guide')">
+            <div class="wf-card-icon"><i class="ti ti-list-check"></i></div>
+            <div>
+              <div class="wf-card-title">빠른 가이드</div>
+              <div class="wf-card-sub">필요 서류 · 체크항목 미리 확인</div>
+            </div>
+          </div>
+          <div class="wf-card" onclick="go('ai-guide-page')">
+            <div class="wf-card-icon"><i class="ti ti-message-chatbot"></i></div>
+            <div>
+              <div class="wf-card-title">AI 상담 도우미</div>
+              <div class="wf-card-sub">상담 중 실시간으로 서류 안내 받기</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="workflow-divider"><i class="ti ti-arrow-right"></i></div>
+
+      <!-- 사후 영역 -->
+      <div class="workflow-phase post">
+        <div class="workflow-phase-label">
+          <i class="ti ti-scan" style="font-size:13px"></i> 사후 — 제출 후 검증
+        </div>
+        <div class="workflow-phase-title">서류 자동 점검</div>
+        <div class="workflow-phase-desc">서류 스캔본을 올리면 AI가 누락·미기재 항목을 자동 검출합니다</div>
+        <div class="workflow-cards">
+          <div class="wf-card" onclick="go('upload')" style="flex:none;width:100%">
+            <div class="wf-card-icon" style="background:#0369a1"><i class="ti ti-file-upload"></i></div>
+            <div>
+              <div class="wf-card-title">판매서류 점검 시작</div>
+              <div class="wf-card-sub">판매서류 PDF 올리면 누락·미기재 항목 바로 확인</div>
+            </div>
+            <i class="ti ti-arrow-right" style="margin-left:auto;color:#7dd3fc;font-size:15px"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 현황 요약 섹션 -->
+    <div style="padding:0 40px 48px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+        <div style="font-size:15px;font-weight:700;color:var(--color-text-primary);letter-spacing:-0.2px">점검 현황</div>
+        <button onclick="go('dashboard')" style="background:none;border:none;font-size:12px;color:var(--color-text-secondary);cursor:pointer;display:flex;align-items:center;gap:4px">전체 보기 <i class="ti ti-arrow-right" style="font-size:12px"></i></button>
+      </div>
+
+      <!-- 통계 카드 4개 -->
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px">
+        <div class="card" style="margin:0;padding:16px 18px">
+          <div style="font-size:13px;color:var(--color-text-secondary);margin-bottom:6px;font-weight:500">총 점검 횟수</div>
+          <div style="font-size:26px;font-weight:700;color:var(--color-text-primary);letter-spacing:-0.5px" id="main-stat-runs">—</div>
+        </div>
+        <div class="card" style="margin:0;padding:16px 18px">
+          <div style="font-size:13px;color:var(--color-text-secondary);margin-bottom:6px;font-weight:500">누적 점검 고객</div>
+          <div style="font-size:26px;font-weight:700;color:var(--color-text-primary);letter-spacing:-0.5px" id="main-stat-customers">—</div>
+        </div>
+        <div class="card" style="margin:0;padding:16px 18px">
+          <div style="font-size:13px;color:var(--color-text-secondary);margin-bottom:6px;font-weight:500">이상 없음 비율</div>
+          <div style="font-size:26px;font-weight:700;color:#3B6D11;letter-spacing:-0.5px" id="main-stat-pass">—</div>
+        </div>
+        <div class="card" style="margin:0;padding:16px 18px">
+          <div style="font-size:13px;color:var(--color-text-secondary);margin-bottom:6px;font-weight:500">보완 필요 비율</div>
+          <div style="font-size:26px;font-weight:700;color:#A32D2D;letter-spacing:-0.5px" id="main-stat-fail">—</div>
+        </div>
+      </div>
+
+      <!-- 최근 점검 이력 -->
+      <div class="card" style="margin:0;padding:0;overflow:hidden">
+        <div style="padding:12px 16px;border-bottom:0.5px solid var(--color-border-tertiary);font-size:12px;font-weight:600;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:0.05em">최근 점검 이력</div>
+        <div id="main-runs-list" style="min-height:60px"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ① 대시보드 -->
+  <div id="dashboard" class="page">
+    <div class="page-inner">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px">
+        <div>
+          <div style="font-size:11px;font-weight:600;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px">금융소비자보호부</div>
+          <h1 style="font-size:20px;font-weight:700;color:var(--color-text-primary);letter-spacing:-0.3px">판매서류 점검 현황</h1>
+        </div>
+        <button class="btn-p" style="width:auto;padding:8px 18px;font-size:13px" onclick="go('upload')"><i class="ti ti-scan"></i> 새 점검 시작</button>
+      </div>
+
+      <!-- 요약 통계 -->
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px">
+        <div class="card" style="margin:0;text-align:center;padding:16px">
+          <div style="font-size:24px;font-weight:600;color:var(--color-text-primary)" id="db-stat-runs">—</div>
+          <div style="font-size:11px;color:var(--color-text-secondary);margin-top:3px">총 점검 횟수</div>
+        </div>
+        <div class="card" style="margin:0;text-align:center;padding:16px">
+          <div style="font-size:24px;font-weight:600;color:var(--color-text-primary)" id="db-stat-customers">—</div>
+          <div style="font-size:11px;color:var(--color-text-secondary);margin-top:3px">누적 점검 고객</div>
+        </div>
+        <div class="card" style="margin:0;text-align:center;padding:16px">
+          <div style="font-size:24px;font-weight:600;color:#3B6D11" id="db-stat-pass">—</div>
+          <div style="font-size:11px;color:var(--color-text-secondary);margin-top:3px">이상 없음 비율</div>
+        </div>
+        <div class="card" style="margin:0;text-align:center;padding:16px">
+          <div style="font-size:24px;font-weight:600;color:#A32D2D" id="db-stat-missing">—</div>
+          <div style="font-size:11px;color:var(--color-text-secondary);margin-top:3px">가장 많은 누락 서류</div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 320px;gap:12px;align-items:start">
+        <!-- 점검 이력 -->
+        <div class="card" style="margin:0;padding:0;overflow:hidden">
+          <div style="padding:14px 16px;border-bottom:0.5px solid var(--color-border-tertiary);display:flex;align-items:center;justify-content:space-between">
+            <span style="font-size:13px;font-weight:600;color:var(--color-text-primary)">점검 이력</span>
+            <span style="font-size:11px;color:var(--color-text-tertiary)">최근 60건</span>
+          </div>
+          <div id="db-runs-list" style="min-height:120px">
+            <div style="padding:32px;text-align:center;color:var(--color-text-tertiary);font-size:13px">
+              <i class="ti ti-loader" style="font-size:20px;display:block;margin-bottom:6px"></i>불러오는 중...
+            </div>
+          </div>
+        </div>
+
+        <!-- 누락 서류 TOP 5 -->
+        <div class="card" style="margin:0">
+          <div style="font-size:13px;font-weight:600;color:var(--color-text-primary);margin-bottom:14px">자주 누락되는 서류</div>
+          <div id="db-missing-chart">
+            <div style="color:var(--color-text-tertiary);font-size:12px;text-align:center;padding:20px 0">불러오는 중...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ② 사전 가이드 -->
+  <div id="guide" class="page">
+    <div class="page-inner">
+    <div class="breadcrumb" onclick="go('main')"><i class="ti ti-chevron-left" style="font-size:14px"></i> 메인으로</div>
+    <p class="sec-title">사전 가이드</p>
+    <p class="sec-sub">상담 전 필요한 서류와 체크항목을 미리 확인하세요</p>
+    <div class="card">
+      <div class="label">직접 선택</div>
+      <div class="row2">
+        <div>
+          <div class="sel-label">상품 유형</div>
+          <select id="guide-product">
+            <option value="ELS">ELS</option>
+            <option value="DLS">DLS</option>
+            <option value="ELB">ELB</option>
+            <option value="DLB">DLB</option>
+            <option value="펀드">펀드</option>
+            <option value="단기사채">단기사채</option>
+          </select>
+        </div>
+        <div>
+          <div class="sel-label">고객군</div>
+          <select id="guide-customer">
+            <option value="일반금융소비자|false">일반금융소비자</option>
+            <option value="일반금융소비자|true">고령투자자 (만 65세 이상)</option>
+            <option value="취약금융소비자|false">취약금융소비자</option>
+            <option value="취약금융소비자|true">취약금융소비자 (고령)</option>
+            <option value="전문금융소비자|false">전문금융소비자</option>
+            <option value="부적합투자자|false">부적합투자자</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn-p" onclick="loadGuide()"><i class="ti ti-list-check"></i> 가이드 보기</button>
+    </div>
+    <div id="guide-result"></div>
+    </div><!-- /page-inner -->
+  </div>
+
+  <!-- ②-b AI 상담 도우미 (사전점검 - guide 페이지 하단에 삽입) -->
+  <div id="ai-guide-page" class="page">
+    <div class="page-inner">
+    <div class="breadcrumb" onclick="go('guide')"><i class="ti ti-chevron-left" style="font-size:14px"></i> 빠른 가이드</div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+      <div>
+        <p class="sec-title" style="margin-bottom:2px">AI 상담 도우미</p>
+        <p class="sec-sub" style="margin-bottom:0">상담 중 음성 녹음 또는 직접 질문하면 실시간으로 가이드를 제공합니다</p>
+      </div>
+      <div style="display:flex;gap:8px;flex-shrink:0">
+        <button onclick="startSession()" class="btn-s" style="width:auto;padding:6px 14px;font-size:12px">
+          <i class="ti ti-refresh"></i> 새 상담
+        </button>
+      </div>
+    </div>
+
+    <!-- 녹음 컨트롤 -->
+    <div class="card" style="margin-bottom:12px">
+      <div class="voice-zone" style="margin-bottom:0">
+        <div class="vicon" id="rec-icon"><i class="ti ti-microphone"></i></div>
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:500" id="rec-status">녹음 대기</div>
+          <div style="font-size:12px;color:var(--color-text-secondary);margin-top:2px" id="rec-timer">새 상담 시작 후 녹음 가능합니다</div>
+        </div>
+        <div style="display:flex;gap:8px;flex-shrink:0">
+          <button id="rec-btn" class="btn-p" style="width:auto;padding:8px 16px;font-size:13px" onclick="toggleRecording()" disabled>
+            <i class="ti ti-player-record"></i> <span id="rec-btn-label">녹음 시작</span>
+          </button>
+          <label class="btn-s" style="width:auto;padding:8px 14px;font-size:13px;cursor:pointer;margin-bottom:0" title="음성 파일 업로드 (.mp3, .mp4, .wav, .webm, .ogg)">
+            <i class="ti ti-upload"></i> 파일
+            <input id="audio-file-input" type="file" accept="audio/*" style="display:none" onchange="uploadAudioFile(this)">
+          </label>
+        </div>
+      </div>
+      <div id="transcript-box" style="display:none;margin-top:10px;padding:10px;background:var(--color-background-secondary);border-radius:var(--border-radius-md)">
+        <div class="label" style="margin-bottom:4px">녹취 텍스트</div>
+        <div id="transcript-text" style="font-size:13px;color:var(--color-text-secondary);line-height:1.6;max-height:100px;overflow-y:auto"></div>
+      </div>
+    </div>
+
+    <!-- 채팅 + 가이드 패널 -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="card" style="margin-bottom:0;display:flex;flex-direction:column;height:calc(100vh - 340px);min-height:300px">
+        <div class="label">대화</div>
+        <div id="chat-msgs" style="flex:1;overflow-y:auto;margin-bottom:10px;display:flex;flex-direction:column;gap:8px">
+          <div style="text-align:center;font-size:14px;color:var(--color-text-tertiary);padding-top:24px">새 상담을 시작하세요</div>
+        </div>
+        <div style="display:flex;gap:6px">
+          <input id="chat-input" type="text" placeholder="예) 단기사채 구매 원하는 일반투자자, 투자기간 6개월, 중도해지 가능 여부 문의"
+            style="flex:1;font-size:13px;padding:8px 10px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary)"
+            onkeydown="if(event.key==='Enter' && !event.isComposing){event.preventDefault();sendChat();}">
+          <button onclick="sendChat()" class="btn-p" style="width:auto;padding:8px 14px;font-size:13px">전송</button>
+        </div>
+      </div>
+
+      <!-- 가이드 패널: 텍스트 모드 / 서류 미리보기 모드 전환 -->
+      <div class="card" style="margin-bottom:0;height:calc(100vh - 340px);min-height:300px;display:flex;flex-direction:column;overflow:hidden">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-shrink:0">
+          <div class="label" style="margin-bottom:0">가이드</div>
+          <span id="gd-counter" style="display:none;font-size:11px;color:var(--color-text-secondary);background:var(--color-background-secondary);padding:2px 10px;border-radius:10px;font-weight:600"></span>
+        </div>
+
+        <!-- 텍스트 모드 (기본) -->
+        <div id="guide-text-panel" style="flex:1;overflow-y:auto;font-size:13px;line-height:1.7;color:var(--color-text-primary)">
+          <div style="text-align:center;font-size:14px;color:var(--color-text-tertiary);padding-top:40px">상담을 시작하면 가이드가 표시됩니다</div>
+        </div>
+
+        <!-- 서류 미리보기 모드 -->
+        <div id="guide-doc-panel" style="display:none;flex:1;overflow-y:auto;">
+          <div id="gd-doc-title" style="font-size:11px;font-weight:700;color:#6D2B3D;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px"></div>
+          <div style="position:relative;display:inline-block;width:100%">
+            <img id="gd-img" style="width:100%;display:block;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md)">
+            <div id="gd-overlays" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none"></div>
+          </div>
+        </div>
+
+        <!-- 네비게이션 바 -->
+        <div id="gd-nav" style="display:none;flex-shrink:0;padding-top:10px;margin-top:8px;border-top:0.5px solid var(--color-border-tertiary);align-items:center;justify-content:space-between;gap:8px">
+          <button id="gd-prev-btn" onclick="gdPrev()" style="background:var(--color-background-secondary);border:0.5px solid var(--color-border-secondary);border-radius:6px;padding:6px 16px;font-size:12px;cursor:pointer;color:var(--color-text-primary)">← 이전</button>
+          <span id="gd-page-info" style="font-size:12px;color:var(--color-text-secondary)"></span>
+          <button id="gd-next-btn" onclick="gdNext()" style="background:#6D2B3D;border:none;border-radius:6px;padding:6px 16px;font-size:12px;cursor:pointer;color:#FAEAE9">다음 →</button>
+        </div>
+      </div>
+    </div>
+    </div><!-- /page-inner -->
+  </div>
+
+  <!-- ③ 파일 업로드 -->
+  <div id="upload" class="page">
+    <div class="page-inner">
+    <div class="breadcrumb" onclick="go('main')"><i class="ti ti-chevron-left" style="font-size:14px"></i> 메인으로</div>
+    <p class="sec-title">판매서류 점검</p>
+    <p class="sec-sub">서류 스캔본을 업로드하면 AI가 자동으로 점검합니다</p>
+    <div class="error-banner" id="upload-error"></div>
+    <div class="card">
+      <div class="label">서류 업로드</div>
+      <div class="upload-zone" id="upload-zone" onclick="document.getElementById('file-input').click()"
+           ondragover="event.preventDefault();this.classList.add('drag')"
+           ondragleave="this.classList.remove('drag')"
+           ondrop="handleDrop(event)">
+        <div class="upload-icon"><i class="ti ti-file-upload"></i></div>
+        <div class="upload-text">PDF를 여기에 끌어다 놓거나 클릭하세요</div>
+        <div class="upload-hint">PDF 지원 · 여러 장 묶음 스캔본 가능</div>
+        <div class="upload-name" id="upload-filename"></div>
+      </div>
+      <input type="file" id="file-input" accept=".pdf" style="display:none" onchange="handleFileSelect(this)">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;padding:10px 12px;background:var(--color-background-secondary);border-radius:var(--border-radius-md);font-size:12px;color:var(--color-text-secondary)">
+        <i class="ti ti-sparkles" style="color:#6D2B3D;font-size:14px"></i>
+        상품유형 · 고객군은 서류 내용으로 고객별 자동 감지됩니다
+      </div>
+      <button class="btn-p" onclick="startCheck()"><i class="ti ti-brain"></i> AI 점검 시작</button>
+    </div>
+    </div><!-- /page-inner -->
+  </div>
+
+  <!-- ④ 점검 진행 -->
+  <div id="progress" class="page">
+    <div class="page-inner">
+    <p class="sec-title">점검 진행 중</p>
+    <p class="sec-sub" id="progress-sub">AI 에이전트가 순서대로 서류를 분석하고 있습니다</p>
+    <div class="step-row">
+      <div class="step" id="step-1"><div class="slabel">1단계</div><div class="sname">전처리</div></div>
+      <div class="step" id="step-2"><div class="slabel">2단계</div><div class="sname">서류 분류</div></div>
+      <div class="step" id="step-3"><div class="slabel">3단계</div><div class="sname">내용 점검</div></div>
+      <div class="step" id="step-4"><div class="slabel">4단계</div><div class="sname">보고서 생성</div></div>
+    </div>
+    <div class="card">
+      <div class="agent-card" id="ac-preprocess">
+        <div class="aicon wait" id="ai-preprocess"><i class="ti ti-photo-scan"></i></div>
+        <div class="ainfo">
+          <div class="aname">전처리</div>
+          <div class="adesc">이미지 변환 · 노이즈 제거 · 기울기 보정</div>
+        </div>
+        <div class="astatus wait" id="as-preprocess">대기</div>
+      </div>
+      <div class="agent-card" style="flex-direction:column;align-items:stretch">
+        <div style="display:flex;align-items:center;gap:12px">
+          <div class="aicon wait" id="ai-classify"><i class="ti ti-scan"></i></div>
+          <div class="ainfo">
+            <div class="aname">서류 분류 에이전트</div>
+            <div class="adesc" id="ad-classify">서류 분류 대기 중</div>
+            <div class="pbar"><div class="pfill" id="pf-classify"></div></div>
+          </div>
+          <div class="astatus wait" id="as-classify">대기</div>
+        </div>
+        <div id="live-pages-container" style="display:none;margin-top:10px;padding-top:10px;border-top:0.5px solid var(--color-border-tertiary)">
+          <div style="font-size:11px;color:var(--color-text-secondary);margin-bottom:6px;font-weight:500;text-transform:uppercase;letter-spacing:0.04em">분류 현황</div>
+          <div id="live-pages-grid" style="display:flex;flex-wrap:wrap;gap:5px"></div>
+        </div>
+      </div>
+      <div class="agent-card">
+        <div class="aicon wait" id="ai-check"><i class="ti ti-checkbox"></i></div>
+        <div class="ainfo">
+          <div class="aname">체크박스 점검 에이전트</div>
+          <div class="adesc" id="ad-check">서류 분류 완료 후 시작</div>
+          <div class="pbar"><div class="pfill" id="pf-check"></div></div>
+        </div>
+        <div class="astatus wait" id="as-check">대기</div>
+      </div>
+      <div class="agent-card">
+        <div class="aicon wait" id="ai-report"><i class="ti ti-file-description"></i></div>
+        <div class="ainfo">
+          <div class="aname">보고서 생성</div>
+          <div class="adesc">점검 완료 후 PDF 보고서 생성</div>
+        </div>
+        <div class="astatus wait" id="as-report">대기</div>
+      </div>
+    </div>
+    </div><!-- /page-inner -->
+  </div>
+
+  <!-- ⑤ 점검 결과 -->
+  <div id="result" class="page">
+    <div class="page-inner">
+    <div class="rh">
+      <div>
+        <p class="sec-title">점검 결과</p>
+        <p class="sec-sub" id="result-meta"></p>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button class="btn-dl" onclick="go('report')"><i class="ti ti-file-description"></i> 보고서 보기</button>
+        <span class="verdict" id="result-verdict"></span>
+      </div>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="stat-n" id="stat-ok" style="color:#3B6D11">0</div><div class="stat-l">정상 항목</div></div>
+      <div class="stat"><div class="stat-n" id="stat-err" style="color:#A32D2D">0</div><div class="stat-l">오류 항목</div></div>
+      <div class="stat"><div class="stat-n" id="stat-warn" id="stat-warn" style="color:#854F0B">0</div><div class="stat-l">확인 필요</div></div>
+    </div>
+    <div class="card" id="result-pages" style="display:none">
+      <div class="label" style="margin-bottom:10px"><i class="ti ti-cpu" style="font-size:12px"></i> AI 판별 결과</div>
+      <div id="result-pages-content" style="display:flex;flex-wrap:wrap;gap:6px"></div>
+    </div>
+    <div class="card" id="result-detail"></div>
+    <div class="hbox">
+      <div class="htitle"><i class="ti ti-user-check" style="font-size:16px"></i> 담당자 검토 (Human-in-the-loop)</div>
+      <div style="font-size:12px;color:var(--color-text-secondary);margin-bottom:8px">AI 판정을 검토하고 최종 확정하세요.</div>
+      <textarea id="review-comment" style="width:100%;font-size:12px;padding:8px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:var(--color-background-primary);color:var(--color-text-primary);resize:none;height:56px" placeholder="검토 의견 (선택사항)"></textarea>
+      <div class="btnrow">
+        <button class="btn-approve" onclick="alert('영업점 발송 기능은 추후 구현 예정입니다.')"><i class="ti ti-check" style="font-size:14px"></i> 확정 후 영업점 발송</button>
+        <button class="btn-reject" onclick="go('upload')"><i class="ti ti-refresh" style="font-size:14px"></i> 재점검</button>
+      </div>
+    </div>
+    </div><!-- /page-inner -->
+  </div>
+
+  <!-- ⑥ 보고서 -->
+  <div id="report" class="page">
+    <div class="page-inner">
+    <div class="breadcrumb" onclick="go('result')"><i class="ti ti-chevron-left" style="font-size:14px"></i> 결과로</div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px">
+      <div>
+        <p class="sec-title">점검 결과 보고서</p>
+        <p class="sec-sub">담당자 검토 후 서명하세요</p>
+      </div>
+      <button class="btn-dl" onclick="downloadReport()"><i class="ti ti-download"></i> PDF 저장</button>
+    </div>
+    <div class="report-box">
+      <div class="report-header">
+        <div class="report-title">판매서류 자동점검 결과 보고서</div>
+        <div class="report-meta" id="report-meta">점검일시: — · DocCheck AI</div>
+      </div>
+      <div class="report-section">
+        <div class="report-section-title">기본 정보</div>
+        <table class="report-table" id="report-info-table">
+          <tr><th>상품유형</th><td id="ri-product">—</td><th>고객군</th><td id="ri-customer">—</td></tr>
+          <tr><th>점검 서류</th><td id="ri-docs">—</td><th>고령투자자</th><td id="ri-elderly">—</td></tr>
+        </table>
+      </div>
+      <div class="report-section">
+        <div class="report-section-title">점검 결과</div>
+        <table class="report-table">
+          <thead><tr><th>서류</th><th>항목</th><th>결과</th></tr></thead>
+          <tbody id="report-result-rows"></tbody>
+        </table>
+      </div>
+      <div class="report-verdict" id="report-verdict-box">
+        <div style="font-size:13px;font-weight:500" id="report-verdict-text">—</div>
+        <div style="font-size:12px" id="report-verdict-count">—</div>
+      </div>
+      <div class="report-section" style="margin-top:12px" id="report-fix-section">
+        <div class="report-section-title">보완 요청 사항</div>
+        <div id="report-fix-list" style="font-size:12px;color:var(--color-text-primary);line-height:1.8"></div>
+      </div>
+      <div class="sign-box">
+        <div style="font-size:11px;font-weight:500;color:var(--color-text-secondary);margin-bottom:10px;text-transform:uppercase;letter-spacing:0.05em">담당자 검수 확인</div>
+        <div class="sign-row">
+          <div class="sign-field"><div class="sign-label">검수 담당자</div><div class="sign-val"></div></div>
+          <div class="sign-field"><div class="sign-label">검수 일자</div><div class="sign-val"></div></div>
+          <div class="sign-field"><div class="sign-label">서명</div><div class="sign-val"></div></div>
+        </div>
+        <div style="margin-top:10px"><div class="sign-label">검수 의견</div><div class="sign-val" id="report-review-comment" style="border-bottom:0.5px solid var(--color-border-secondary);padding-bottom:8px;min-height:32px"></div></div>
+      </div>
+      <div style="font-size:11px;color:var(--color-text-tertiary);margin-top:12px;line-height:1.6">
+        ※ 본 보고서는 AI가 자동 생성한 초안입니다. 담당자 검수 후 최종 확정하여 사용하시기 바랍니다.<br>
+        ※ AI 판단이 불확실한 항목은 원본 서류를 직접 확인하시기 바랍니다.
+      </div>
+    </div>
+    </div><!-- /page-inner -->
+  </div>
+</div>
+
+<script>
+// ── 상태 ─────────────────────────────────────────────────────
+let _checklist = null;
+let _jobId = null;
+let _pollTimer = null;
+let _lastResult = null;
+let _selectedFile = null;
+
+const pageNames = {
+  main: '', guide: '빠른 가이드', 'ai-guide-page': 'AI 상담 도우미',
+  dashboard: '점검 현황 대시보드',
+  upload: '사후 점검', progress: '점검 진행 중', result: '점검 결과', report: '결과 보고서'
+};
+
+// ── 페이지 전환 ────────────────────────────────────────────────
+function go(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.getElementById('nav-breadcrumb').textContent = pageNames[id] || '';
+  window.scrollTo(0, 0);
+  if (id === 'dashboard') loadDashboard();
+  if (id === 'main') loadMainStats();
+}
+
+// ── 대시보드 ────────────────────────────────────────────────────
+let _dashCache = null;
+
+function renderDashboard({ runs, stats }) {
+  // 통계 카드
+  document.getElementById('db-stat-runs').textContent = stats.total_runs ?? '—';
+  document.getElementById('db-stat-customers').textContent = stats.total_customers ?? '—';
+  document.getElementById('db-stat-pass').textContent =
+    stats.total_customers ? `${stats.pass_rate}%` : '—';
+  const topMissing = stats.top_missing?.[0];
+  document.getElementById('db-stat-missing').textContent =
+    topMissing ? topMissing['서류'].replace(/_/g, ' ') : '없음';
+
+  // 점검 이력 — 월별 그룹
+  const listEl = document.getElementById('db-runs-list');
+  if (!runs || runs.length === 0) {
+    listEl.innerHTML = '<div style="padding:32px;text-align:center;color:var(--color-text-tertiary);font-size:13px">아직 점검 기록이 없습니다</div>';
+  } else {
+    // 월별 그룹화
+    const byMonth = {};
+    runs.forEach(r => {
+      const dt = new Date(r.run_timestamp);
+      const monthKey = dt.toLocaleDateString('ko-KR', {year:'numeric', month:'long'});
+      if (!byMonth[monthKey]) byMonth[monthKey] = [];
+      byMonth[monthKey].push(r);
+    });
+
+    listEl.innerHTML = Object.entries(byMonth).map(([month, monthRuns]) => {
+      const totalC = monthRuns.reduce((s, r) => s + r.total_customers, 0);
+      const passC  = monthRuns.reduce((s, r) => s + r.pass_count, 0);
+      const monthRate = totalC ? Math.round(passC / totalC * 100) : 0;
+
+      const rows = monthRuns.map(r => {
+        const dt = new Date(r.run_timestamp);
+        const dateStr = dt.toLocaleDateString('ko-KR', {month:'2-digit', day:'2-digit'});
+        const timeStr = dt.toLocaleTimeString('ko-KR', {hour:'2-digit', minute:'2-digit'});
+        const passRate = r.total_customers ? Math.round(r.pass_count / r.total_customers * 100) : 0;
+        const badgeColor = passRate === 100 ? '#3B6D11' : passRate >= 70 ? '#633806' : '#A32D2D';
+        const badgeBg   = passRate === 100 ? '#EAF3DE'  : passRate >= 70 ? '#FAEEDA'  : '#FCEBEB';
+        return `<div onclick="showRunDetail('${r.id}')" style="padding:10px 16px 10px 32px;border-bottom:0.5px solid var(--color-border-tertiary);display:flex;align-items:center;gap:12px;cursor:pointer;transition:background 0.1s" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background=''">
+          <div style="min-width:64px">
+            <div style="font-size:13px;font-weight:500;color:var(--color-text-primary)">${dateStr}</div>
+            <div style="font-size:11px;color:var(--color-text-tertiary)">${timeStr}</div>
+          </div>
+          <div style="flex:1;font-size:12px;color:var(--color-text-secondary)">${r.total_customers}명 · ${r.total_pages}장</div>
+          <div style="font-size:12px;font-weight:600;padding:3px 10px;border-radius:20px;background:${badgeBg};color:${badgeColor}">${passRate}%</div>
+          <i class="ti ti-chevron-right" style="font-size:13px;color:var(--color-text-tertiary)"></i>
+        </div>`;
+      }).join('');
+
+      return `
+        <div style="padding:8px 16px 6px;background:var(--color-background-secondary);border-bottom:0.5px solid var(--color-border-tertiary);display:flex;align-items:center;justify-content:space-between">
+          <span style="font-size:11px;font-weight:600;color:var(--color-text-secondary)">${month}</span>
+          <span style="font-size:11px;color:var(--color-text-tertiary)">${monthRuns.length}회 · ${totalC}명 · 통과율 ${monthRate}%</span>
+        </div>
+        ${rows}`;
+    }).join('');
+  }
+
+  // 누락 서류 차트
+  const chartEl = document.getElementById('db-missing-chart');
+  const missing = stats.top_missing || [];
+  if (missing.length === 0) {
+    chartEl.innerHTML = '<div style="color:var(--color-text-tertiary);font-size:12px;text-align:center;padding:20px 0">누락 데이터 없음</div>';
+  } else {
+    const maxCount = missing[0]['건수'];
+    chartEl.innerHTML = missing.map(m => {
+      const pct = maxCount > 0 ? Math.round(m['건수'] / maxCount * 100) : 0;
+      return `<div style="margin-bottom:10px">
+        <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px">
+          <span style="color:var(--color-text-primary);font-weight:500">${m['서류'].replace(/_/g,' ')}</span>
+          <span style="color:var(--color-text-secondary)">${m['건수']}건</span>
+        </div>
+        <div style="height:6px;background:var(--color-background-secondary);border-radius:3px;overflow:hidden">
+          <div style="height:100%;width:${pct}%;background:#6D2B3D;border-radius:3px;transition:width 0.5s"></div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+}
+
+async function loadMainStats() {
+  try {
+    const res = await fetch('/api/dashboard');
+    if (!res.ok) return;
+    const data = await res.json();
+    const runs = data.runs || [];
+
+    const totalRuns = runs.length;
+    const totalCustomers = runs.reduce((s, r) => s + (r.total_customers || 0), 0);
+    const totalPass = runs.reduce((s, r) => s + (r.pass_count || 0), 0);
+    const totalFail = runs.reduce((s, r) => s + (r.fail_count || 0), 0);
+    const passRate = totalCustomers > 0 ? Math.round(totalPass / totalCustomers * 100) : 0;
+    const failRate = totalCustomers > 0 ? Math.round(totalFail / totalCustomers * 100) : 0;
+
+    document.getElementById('main-stat-runs').textContent = totalRuns;
+    document.getElementById('main-stat-customers').textContent = totalCustomers;
+    document.getElementById('main-stat-pass').textContent = passRate + '%';
+    document.getElementById('main-stat-fail').textContent = failRate + '%';
+
+    const list = document.getElementById('main-runs-list');
+    if (!runs.length) {
+      list.innerHTML = '<div style="padding:20px;text-align:center;font-size:12px;color:var(--color-text-tertiary)">점검 이력이 없습니다</div>';
+      return;
+    }
+
+    list.innerHTML = runs.slice(0, 5).map(r => {
+      const pass = r.pass_count || 0;
+      const fail = r.fail_count || 0;
+      const total = r.total_customers || 1;
+      const allOk = fail === 0;
+      const date = (r.run_timestamp || r.run_date || '').slice(0, 10);
+      return `<div style="display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:0.5px solid var(--color-border-tertiary)">
+        <div style="width:6px;height:6px;border-radius:50%;background:${allOk ? '#3B6D11' : '#A32D2D'};flex-shrink:0"></div>
+        <div style="flex:1;font-size:13px;color:var(--color-text-primary)">${date}</div>
+        <div style="font-size:12px;color:var(--color-text-secondary)">${total}명</div>
+        <div style="font-size:12px;font-weight:600;color:${allOk ? '#3B6D11' : '#A32D2D'}">${allOk ? '이상 없음' : `보완 ${fail}건`}</div>
+      </div>`;
+    }).join('');
+  } catch(e) {}
+}
+
+async function loadDashboard() {
+  // 캐시 있으면 즉시 렌더 (스피너 없이), 그 다음 백그라운드 갱신
+  if (_dashCache) renderDashboard(_dashCache);
+
+  try {
+    const res = await fetch('/api/dashboard');
+    if (!res.ok) return;
+    const data = await res.json();
+    _dashCache = data;
+    renderDashboard(data);
+  } catch(e) {
+    console.error('대시보드 로드 실패', e);
+  }
+}
+
+async function showRunDetail(runId) {
+  try {
+    const res = await fetch(`/api/dashboard/run/${runId}`);
+    if (!res.ok) return;
+    const run = await res.json();
+    const dt = new Date(run.run_timestamp);
+    const dateStr = dt.toLocaleDateString('ko-KR', {year:'numeric',month:'long',day:'numeric'});
+    const rows = (run.customers || []).map(c => {
+      const passIcon = c.pass
+        ? '<i class="ti ti-circle-check" style="color:#3B6D11"></i>'
+        : '<i class="ti ti-alert-circle" style="color:#A32D2D"></i>';
+      const missing = c['누락서류']?.length ? c['누락서류'].join(', ') : '—';
+      return `<tr>
+        <td style="padding:8px 10px;border-bottom:0.5px solid var(--color-border-tertiary)">${c['고객번호']}</td>
+        <td style="padding:8px 10px;border-bottom:0.5px solid var(--color-border-tertiary)">${c['상품유형']}</td>
+        <td style="padding:8px 10px;border-bottom:0.5px solid var(--color-border-tertiary);font-size:11px;color:var(--color-text-secondary)">${c['고객군']}</td>
+        <td style="padding:8px 10px;border-bottom:0.5px solid var(--color-border-tertiary);text-align:center">${passIcon}</td>
+        <td style="padding:8px 10px;border-bottom:0.5px solid var(--color-border-tertiary);font-size:11px;color:#A32D2D">${missing}</td>
+      </tr>`;
+    }).join('');
+
+    document.getElementById('run-detail-title').textContent = `${dateStr} 점검 결과`;
+    document.getElementById('run-detail-meta').textContent =
+      `${run.total_customers}명 · ${run.total_pages}장 · 통과 ${run.pass_count}명 / 미통과 ${run.fail_count}명`;
+    document.getElementById('run-detail-body').innerHTML = rows;
+    document.getElementById('run-detail-modal').style.display = 'flex';
+  } catch(e) { console.error(e); }
+}
+
+// (대시보드는 해당 페이지 진입 시에만 로드)
+
+// ── 체크리스트 로드 ──────────────────────────────────────────
+async function fetchChecklist() {
+  if (_checklist) return _checklist;
+  const res = await fetch('/api/checklist');
+  _checklist = await res.json();
+  return _checklist;
+}
+
+// ── 사전 가이드 렌더링 ────────────────────────────────────────
+async function loadGuide() {
+  const cl = await fetchChecklist();
+  const product = document.getElementById('guide-product').value;
+  const [고객군, 고령str] = document.getElementById('guide-customer').value.split('|');
+  const 고령투자자 = 고령str === 'true';
+
+  const prefixMap = {
+    'ELS': '파생_ELS', 'DLS': '파생_ELS',
+    'ELB': '파생_ELB', 'DLB': '파생_DLB',
+    '펀드': '펀드', '단기사채': '단기사채',
+  };
+  const prefix = prefixMap[product];
+  let suffix = '일반';
+  if (고령투자자) suffix = '고령';
+  else if (고객군.includes('취약')) suffix = '취약';
+  else if (고객군.includes('전문')) suffix = '전문';
+  else if (고객군.includes('부적합')) suffix = '부적합';
+  const key = prefix ? `${prefix}_${suffix}` : null;
+  const docIds = key ? ((cl._필요서류 || {})[key] || []) : [];
+
+  const container = document.getElementById('guide-result');
+  if (!docIds.length) {
+    container.innerHTML = '<div class="guide-empty">해당 조건의 규칙이 없습니다</div>';
+    return;
+  }
+
+  let html = `<div class="card"><div class="label">${product} · ${고객군}${고령투자자 ? ' (고령)' : ''} — 필요 서류</div>`;
+  docIds.forEach(docId => {
+    const doc = cl[docId];
+    if (!doc) return;
+    const hasPreview = !!_ANNOTATED[docId];
+    html += `<div class="gi"><div class="gdoc" style="display:flex;align-items:center;justify-content:space-between">
+      <div><i class="ti ti-file-text" style="font-size:15px;color:#6D2B3D"></i>
+      ${doc.서류명} <span class="badge bb">필수</span></div>
+      ${hasPreview ? `<button onclick="showDocPreview('${docId}','${doc.서류명}')" style="background:none;border:0.5px solid var(--color-border-secondary);border-radius:6px;padding:3px 10px;font-size:11px;color:#6D2B3D;cursor:pointer;flex-shrink:0"><i class="ti ti-eye" style="font-size:12px;vertical-align:-1px"></i> 미리보기</button>` : ''}
+    </div><ul class="gchecks">`;
+    (doc.체크그룹 || []).forEach(g => {
+      html += `<li>${g.그룹ID}: [${g.항목.join(' / ')}]</li>`;
+    });
+    (doc.필기입력항목 || []).filter(f => f.필수).forEach(f => {
+      html += `<li>${f.설명 || f.항목ID} 기재</li>`;
+    });
+    html += '</ul></div>';
+  });
+  html += '</div>';
+  container.innerHTML = html;
+}
+
+// ── 파일 선택 ─────────────────────────────────────────────────
+function handleFileSelect(input) {
+  if (input.files[0]) setFile(input.files[0]);
+}
+function handleDrop(e) {
+  e.preventDefault();
+  document.getElementById('upload-zone').classList.remove('drag');
+  const f = e.dataTransfer.files[0];
+  if (f && f.type === 'application/pdf') setFile(f);
+}
+function setFile(f) {
+  _selectedFile = f;
+  document.getElementById('upload-filename').textContent = '선택됨: ' + f.name;
+}
+
+// ── 점검 시작 ─────────────────────────────────────────────────
+async function startCheck() {
+  const errEl = document.getElementById('upload-error');
+  errEl.style.display = 'none';
+
+  if (!_selectedFile) {
+    errEl.textContent = 'PDF 파일을 먼저 선택해주세요.';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append('pdf', _selectedFile);
+
+  try {
+    const res = await fetch('/api/check', { method: 'POST', body: formData });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || '요청 실패');
+    _jobId = data.job_id;
+    resetProgress();
+    go('progress');
+    startPolling();
+  } catch (e) {
+    errEl.textContent = '오류: ' + e.message;
+    errEl.style.display = 'block';
+  }
+}
+
+// ── 진행 상황 폴링 ────────────────────────────────────────────
+function resetProgress() {
+  ['preprocess','classify','check','report'].forEach(k => {
+    document.getElementById('ai-'+k).className = 'aicon wait';
+    document.getElementById('as-'+k).className = 'astatus wait';
+    document.getElementById('as-'+k).textContent = '대기';
+  });
+  document.getElementById('pf-classify').style.width = '0%';
+  document.getElementById('pf-check').style.width = '0%';
+  ['step-1','step-2','step-3','step-4'].forEach(id =>
+    document.getElementById(id).className = 'step'
+  );
+}
+
+function startPolling() {
+  if (_pollTimer) clearInterval(_pollTimer);
+  _pollTimer = setInterval(pollStatus, 2000);
+  pollStatus();
+}
+
+async function pollStatus() {
+  if (!_jobId) return;
+  try {
+    const res = await fetch('/api/status/' + _jobId);
+    if (res.status === 404) {
+      // 서버 재시작/새로고침 등으로 이전 job_id가 사라진 경우 폴링 중지
+      clearInterval(_pollTimer);
+      _pollTimer = null;
+      _jobId = null;
+      document.getElementById('progress-sub').textContent = '이전 점검 세션이 종료되었습니다. 파일을 다시 업로드해 점검을 시작해 주세요.';
+      return;
+    }
+    const data = await res.json();
+    updateProgressUI(data);
+    if (data.status === 'done') {
+      clearInterval(_pollTimer);
+      _pollTimer = null;
+      await loadResult();
+    } else if (data.status === 'error') {
+      clearInterval(_pollTimer);
+      _pollTimer = null;
+      document.getElementById('progress-sub').textContent = '오류: ' + (data.error || '알 수 없는 오류');
+    }
+  } catch(e) {}
+}
+
+function setStep(active) {
+  for (let i = 1; i <= 4; i++) {
+    const el = document.getElementById('step-' + i);
+    if (i < active) el.className = 'step done';
+    else if (i === active) el.className = 'step active';
+    else el.className = 'step';
+  }
+}
+function setAgent(key, state, desc) {
+  document.getElementById('ai-'+key).className = 'aicon ' + state;
+  const as = document.getElementById('as-'+key);
+  as.className = 'astatus ' + state;
+  as.textContent = state === 'done' ? '완료' : state === 'active' ? '진행 중' : '대기';
+  const ad = document.getElementById('ad-'+key);
+  if (ad && desc) ad.textContent = desc;
+}
+
+const _PAGE_COLORS = ['#dbeafe','#dcfce7','#fef9c3','#fce7f3','#ede9fe','#ffedd5','#fee2e2','#cffafe'];
+const _docColorMap = {};
+let _docColorIdx = 0;
+
+function _docColor(docId) {
+  if (docId === 'unknown') return '#f1f5f9';
+  if (!_docColorMap[docId]) {
+    _docColorMap[docId] = _PAGE_COLORS[_docColorIdx++ % _PAGE_COLORS.length];
+  }
+  return _docColorMap[docId];
+}
+
+function updateLivePages(pageMap) {
+  if (!pageMap || !Object.keys(pageMap).length) return;
+  const container = document.getElementById('live-pages-container');
+  const grid = document.getElementById('live-pages-grid');
+  container.style.display = 'block';
+
+  const pages = Object.keys(pageMap).map(Number).sort((a, b) => a - b);
+  grid.innerHTML = pages.map(p => {
+    const docId = pageMap[p];
+    const docName = (_checklist && _checklist[docId])
+      ? (_checklist[docId].서류명 || docId)
+      : (docId === 'unknown' ? '미분류' : docId);
+    const short = docName.length > 10 ? docName.slice(0, 10) + '…' : docName;
+    const bg = _docColor(docId);
+    return `<div style="background:${bg};border-radius:5px;padding:4px 9px;font-size:11px;display:flex;align-items:center;gap:5px;white-space:nowrap">
+      <span style="font-weight:700;color:#374151">P${p}</span>
+      <span style="color:#475569">${short}</span>
+    </div>`;
+  }).join('');
+}
+
+function updateProgressUI(data) {
+  const stage = data.stage;
+  const detail = data.detail || '';
+
+  if (data.page_map) updateLivePages(data.page_map);
+
+  if (stage === 'preprocessing') {
+    setStep(1);
+    setAgent('preprocess', 'active');
+    setAgent('classify', 'wait', '서류 분류 대기 중');
+    setAgent('check', 'wait', '서류 분류 완료 후 시작');
+    setAgent('report', 'wait');
+  } else if (stage === 'classifying') {
+    setStep(2);
+    setAgent('preprocess', 'done');
+    setAgent('classify', 'active', detail);
+    setAgent('check', 'wait', '서류 분류 완료 후 시작');
+    setAgent('report', 'wait');
+    const m = detail.match(/(\d+)\/(\d+)/);
+    if (m) document.getElementById('pf-classify').style.width = (m[1]/m[2]*100) + '%';
+  } else if (stage === 'checking') {
+    setStep(3);
+    setAgent('preprocess', 'done');
+    setAgent('classify', 'done', '분류 완료');
+    setAgent('check', 'active', detail);
+    setAgent('report', 'wait');
+    document.getElementById('pf-classify').style.width = '100%';
+    const m = detail.match(/(\d+)\/(\d+)/);
+    if (m) document.getElementById('pf-check').style.width = (m[1]/m[2]*100) + '%';
+  } else if (stage === 'reporting') {
+    setStep(4);
+    setAgent('preprocess', 'done');
+    setAgent('classify', 'done', '분류 완료');
+    setAgent('check', 'done', '점검 완료');
+    setAgent('report', 'active');
+    document.getElementById('pf-classify').style.width = '100%';
+    document.getElementById('pf-check').style.width = '100%';
+  } else if (stage === 'done') {
+    setStep(5);
+    setAgent('preprocess', 'done');
+    setAgent('classify', 'done', '분류 완료');
+    setAgent('check', 'done', '점검 완료');
+    setAgent('report', 'done');
+  }
+}
+
+// ── 결과 렌더링 ──────────────────────────────────────────────
+async function loadResult() {
+  const res = await fetch('/api/result/' + _jobId);
+  const data = await res.json();
+  _lastResult = data;
+  renderResult(data);
+  renderReport(data);
+  go('result');
+}
+
+function renderResult(data) {
+  const 누락 = data.누락서류 || [];
+  const 보완 = data.보완서류 || [];
+  const 결과 = data.전체_결과 || {};
+  const cl = _checklist;
+
+  // AI 판별 결과 — 페이지별 서류 태그
+  const 서류별페이지 = data.서류별_페이지 || {};
+  const pagesBox = document.getElementById('result-pages');
+  const pagesContent = document.getElementById('result-pages-content');
+  if (Object.keys(서류별페이지).length > 0) {
+    pagesBox.style.display = '';
+    const colors = ['#dbeafe','#dcfce7','#fef9c3','#fce7f3','#ede9fe','#ffedd5'];
+    pagesContent.innerHTML = Object.entries(서류별페이지)
+      .filter(([docId]) => docId !== 'unknown')
+      .map(([docId, pages], i) => {
+      const 서류명 = cl ? (cl[docId]||{}).서류명||docId : docId;
+      const bg = colors[i % colors.length];
+      return `<div style="background:${bg};border-radius:6px;padding:5px 10px;font-size:12px;display:flex;align-items:center;gap:6px">
+        <span style="font-weight:600;color:#1e293b">${서류명}</span>
+        <span style="color:#64748b">${pages.map(p=>`${p}p`).join(', ')}</span>
+      </div>`;
+    }).join('');
+  } else {
+    pagesBox.style.display = 'none';
+  }
+
+  let okTotal = 0, errTotal = 누락.length + 보완.length;
+  Object.entries(결과).forEach(([docId, r]) => {
+    if (docId === 'unknown') return;
+    if (r.pass) okTotal++;
+    errTotal += (r.errors||[]).length;
+  });
+
+  document.getElementById('stat-ok').textContent = okTotal;
+  document.getElementById('stat-err').textContent = errTotal;
+  document.getElementById('stat-warn').textContent = 0;
+  const autoTag = data.상품유형 ? `${data.상품유형} · ${data.고객군} <span style="font-size:10px;background:#FAEAE9;color:#C0392B;padding:1px 6px;border-radius:4px;font-weight:600">자동감지</span>` : '';
+  document.getElementById('result-meta').innerHTML = autoTag + ' · ' + new Date().toLocaleDateString('ko-KR');
+
+  const vEl = document.getElementById('result-verdict');
+  if (errTotal > 0) {
+    vEl.className = 'verdict fail';
+    vEl.innerHTML = '<i class="ti ti-alert-circle"></i> 보완 필요';
+  } else {
+    vEl.className = 'verdict pass';
+    vEl.innerHTML = '<i class="ti ti-circle-check"></i> 적합';
+  }
+
+  let detail = '';
+  if (누락.length) {
+    detail += '<div class="doc-section-title">누락 서류</div>';
+    누락.forEach(s => {
+      const 서류명 = cl ? (cl[s]||{}).서류명||s : s;
+      detail += `<div class="ci">
+        <i class="ti ti-alert-circle cicon err"></i>
+        <div><div class="clabel">${서류명}</div><div class="cdesc">서류 미제출</div></div>
+      </div>`;
+    });
+  }
+  if (보완.length) {
+    detail += '<div class="doc-section-title" style="color:#D97706;margin-top:12px">보완 서류 (고령투자자)</div>';
+    보완.forEach(s => {
+      const 서류명 = cl ? (cl[s]||{}).서류명||s : s;
+      const hasAnn = !!_ANNOTATED[s];
+      const previewBtn = hasAnn
+        ? `<button onclick="showErrorAnnotation('${s}')" style="background:none;border:0.5px solid #D97706;border-radius:6px;padding:2px 10px;font-size:11px;color:#D97706;cursor:pointer;flex-shrink:0"><i class="ti ti-map-pin" style="font-size:11px;vertical-align:-1px"></i> 작성가이드 보기</button>`
+        : '';
+      detail += `<div class="ci" style="display:flex;align-items:center;justify-content:space-between">
+        <div style="flex:1"><i class="ti ti-alert-circle cicon err" style="color:#D97706"></i><div style="display:inline"><div class="clabel">${서류명}</div><div class="cdesc" style="color:#D97706">고령투자자 보호 강화 서류 필수</div></div></div>
+        ${previewBtn}
+      </div>`;
+    });
+  }
+  Object.entries(결과).forEach(([docId, r]) => {
+    // 미분류 항목 제외
+    if (docId === 'unknown') return;
+    
+    const 서류명 = cl ? (cl[docId]||{}).서류명||docId : docId;
+    const pages = (data.서류별_페이지 || {})[docId] || [];
+    const hasAnn = !!_ANNOTATED[docId];
+    const annBtn = hasAnn
+      ? `<button onclick="showErrorAnnotation('${docId}')" style="background:none;border:0.5px solid ${r.pass?'#3B6D11':'#A32D2D'};border-radius:6px;padding:2px 10px;font-size:11px;color:${r.pass?'#3B6D11':'#A32D2D'};cursor:pointer;flex-shrink:0"><i class="ti ti-${r.pass?'circle-check':'map-pin'}" style="font-size:11px;vertical-align:-1px"></i> ${r.pass?'서류 확인':'오류 위치 보기'}</button>`
+      : '';
+    detail += `<div class="doc-section-title" style="display:flex;align-items:center;justify-content:space-between">${서류명}${annBtn}</div>`;
+    if (r.pass) {
+      const pageBtn = pages.length ? `<button onclick="openPageViewer([${pages.join(',')}],0)" class="page-view-btn">P${pages[0]} 보기</button>` : '';
+      detail += `<div class="ci"><i class="ti ti-circle-check cicon ok"></i><div style="flex:1"><div class="clabel">이상 없음</div></div>${pageBtn}</div>`;
+    }
+    (r.errors||[]).forEach(err => {
+      const pageBtn = pages.length ? `<button onclick="openPageViewer([${pages.join(',')}],0)" class="page-view-btn err-btn">P${pages[0]} 보기</button>` : '';
+      detail += `<div class="ci"><i class="ti ti-alert-circle cicon err"></i><div style="flex:1"><div class="clabel">[${err.항목}] ${err.오류}</div><div class="cdesc" style="color:#A32D2D;margin-top:3px;font-size:11px">→ 서류에서 해당 칸을 다시 작성해 주세요</div></div>${pageBtn}</div>`;
+    });
+  });
+  document.getElementById('result-detail').innerHTML = detail || '<div style="padding:12px;font-size:13px;color:var(--color-text-secondary)">점검 항목 없음</div>';
+}
+
+function renderReport(data) {
+  const 누락 = data.누락서류 || [];
+  const 보완 = data.보완서류 || [];
+  const 결과 = data.전체_결과 || {};
+  const cl = _checklist;
+
+  let errTotal = 누락.length + 보완.length + Object.entries(결과).reduce((s,[docId,r])=> docId === 'unknown' ? s : s+(r.errors||[]).length, 0);
+
+  document.getElementById('report-meta').textContent =
+    '점검일시: ' + new Date().toLocaleString('ko-KR') + ' · DocCheck AI';
+  document.getElementById('ri-product').textContent = data.상품유형;
+  document.getElementById('ri-customer').textContent = data.고객군;
+  document.getElementById('ri-docs').textContent = Object.keys(결과).filter(k => k !== 'unknown').length + '종';
+  document.getElementById('ri-elderly').textContent = data.고령투자자 ? '해당' : '비해당';
+
+  let rows = '';
+  누락.forEach(s => {
+    const 서류명 = cl ? (cl[s]||{}).서류명||s : s;
+    rows += `<tr><td>—</td><td>${서류명}</td><td style="color:#A32D2D">누락</td></tr>`;
+  });
+  보완.forEach(s => {
+    const 서류명 = cl ? (cl[s]||{}).서류명||s : s;
+    rows += `<tr><td>—</td><td>${서류명}</td><td style="color:#D97706">보완필수</td></tr>`;
+  });
+  Object.entries(결과).forEach(([docId, r]) => {
+    if (docId === 'unknown') return;
+    const 서류명 = cl ? (cl[docId]||{}).서류명||docId : docId;
+    if (r.pass) {
+      rows += `<tr><td>${서류명}</td><td>전체</td><td style="color:#3B6D11">정상</td></tr>`;
+    }
+    (r.errors||[]).forEach(err => {
+      rows += `<tr><td>${서류명}</td><td>[${err.항목}] ${err.오류}</td><td style="color:#A32D2D">오류</td></tr>`;
+    });
+  });
+  document.getElementById('report-result-rows').innerHTML = rows;
+
+  const vBox = document.getElementById('report-verdict-box');
+  const vText = document.getElementById('report-verdict-text');
+  const vCount = document.getElementById('report-verdict-count');
+  if (errTotal > 0) {
+    vBox.className = 'report-verdict';
+    vText.style.color = '#A32D2D';
+    vText.innerHTML = '<i class="ti ti-alert-circle" style="font-size:16px;vertical-align:-2px;margin-right:4px"></i> 최종 판정: 보완 필요';
+    vCount.style.color = '#A32D2D';
+    vCount.textContent = `오류 ${errTotal}건`;
+  } else {
+    vBox.className = 'report-verdict pass';
+    vText.style.color = '#3B6D11';
+    vText.innerHTML = '<i class="ti ti-circle-check" style="font-size:16px;vertical-align:-2px;margin-right:4px"></i> 최종 판정: 적합';
+    vCount.style.color = '#3B6D11';
+    vCount.textContent = '모든 항목 정상';
+  }
+
+  let fixList = '';
+  let fixIdx = 1;
+  누락.forEach(s => {
+    const 서류명 = cl ? (cl[s]||{}).서류명||s : s;
+    fixList += `${fixIdx++}. ${서류명} 서류 제출 필요<br>`;
+  });
+  Object.entries(결과).forEach(([docId, r]) => {
+    const 서류명 = cl ? (cl[docId]||{}).서류명||docId : docId;
+    (r.errors||[]).forEach(err => { fixList += `${fixIdx++}. ${서류명} — [${err.항목}] ${err.오류}<br>`; });
+  });
+  document.getElementById('report-fix-list').innerHTML = fixList || '보완 사항 없음';
+  document.getElementById('report-fix-section').style.display = fixList ? '' : 'none';
+
+  const comment = document.getElementById('review-comment').value;
+  document.getElementById('report-review-comment').textContent = comment;
+}
+
+// ── PDF 저장 ────────────────────────────────────────────────
+function downloadReport() {
+  if (_jobId) window.location.href = '/api/report/' + _jobId;
+}
+
+// ── 초기 로드 ────────────────────────────────────────────────
+fetchChecklist();
+loadAnnotationCatalog();
+
+// ── AI 상담 도우미 ─────────────────────────────────────────────
+let _sessionId = null;
+let _guideAgentId = null;
+let _mediaRecorder = null;
+let _isRecording = false;
+let _recSeconds = 0;
+let _recTimer = null;
+let _recordedChunks = [];
+let _fullTranscript = '';
+let _isSendingChat = false;
+let _chatComposing = false;
+
+// 미리보기가 있는 서류: {서류ID: 서류명}
+let _ANNOTATED = {};
+
+window.addEventListener('DOMContentLoaded', () => {
+  loadAnnotationCatalog();
+  loadMainStats();
+
+  const chatInput = document.getElementById('chat-input');
+  if (!chatInput) return;
+
+  chatInput.addEventListener('compositionstart', () => {
+    _chatComposing = true;
+  });
+
+  chatInput.addEventListener('compositionend', () => {
+    _chatComposing = false;
+  });
+});
+
+async function loadAnnotationCatalog() {
+  try {
+    const res = await fetch('/api/annotations');
+    if (!res.ok) return;
+    const data = await res.json();
+    const docs = Array.isArray(data.docs) ? data.docs : [];
+    _ANNOTATED = {};
+    docs.forEach(d => { _ANNOTATED[d.doc_id] = d.doc_name; });
+  } catch (e) {
+    console.error('annotation 목록 로드 실패:', e);
+  }
+}
+
+function detectAndLoadDocPreview(text) {
+  for (const [id, name] of Object.entries(_ANNOTATED)) {
+    if (text.includes(id) || text.includes(name)) {
+      const sel = document.getElementById('preview-doc-select');
+      if (sel) sel.value = id;
+      loadDocPreview(id);
+      return;
+    }
+  }
+}
+
+async function startSession(resetUi = true) {
+  try {
+    const res = await fetch('/api/guide/session', { method: 'POST' });
+    const text = await res.text();
+    if (!text) throw new Error(`서버 빈 응답 (HTTP ${res.status})`);
+    let data;
+    try { data = JSON.parse(text); }
+    catch(e) { throw new Error(`JSON 파싱 오류: ${text.slice(0, 200)}`); }
+    if (data.error) throw new Error(data.error);
+    _sessionId = data.session_id;
+    _guideAgentId = data.agent_id;
+
+    if (resetUi) {
+      document.getElementById('chat-msgs').innerHTML =
+        '<div style="text-align:center;font-size:12px;color:var(--color-text-tertiary);padding-top:12px">안녕하세요! 상담 내용을 말씀해 주세요. 예: 단기사채 구매 원하는 일반투자자</div>';
+      _showGuideTextMode();
+      document.getElementById('guide-text-panel').innerHTML =
+        '<div style="text-align:center;font-size:12px;color:var(--color-text-tertiary);padding-top:40px">가이드를 기다리는 중...</div>';
+      document.getElementById('transcript-box').style.display = 'none';
+      _fullTranscript = '';
+      if (_isRecording) stopRecording();
+    }
+
+    document.getElementById('rec-btn').disabled = false;
+    document.getElementById('rec-timer').textContent = '녹음 준비 완료';
+  } catch(e) {
+    alert('세션 시작 오류: ' + e.message);
+    throw e;
+  }
+}
+
+function appendChatMsg(role, text) {
+  const container = document.getElementById('chat-msgs');
+  const isUser = role === 'user';
+  const cleaned = normalizeChatText(text);
+  const div = document.createElement('div');
+  div.style.cssText = `display:flex;justify-content:${isUser ? 'flex-end' : 'flex-start'}`;
+  div.innerHTML = `<div style="max-width:85%;padding:8px 12px;border-radius:${isUser ? '12px 12px 2px 12px' : '12px 12px 12px 2px'};background:${isUser ? '#6D2B3D' : 'var(--color-background-secondary)'};color:${isUser ? '#FAEAE9' : 'var(--color-text-primary)'};font-size:13px;line-height:1.5;white-space:pre-wrap">${escHtml(cleaned)}</div>`;
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+  return div;
+}
+
+function normalizeChatText(s) {
+  return String(s || '')
+    .replace(/\*\*/g, '')
+    .replace(/__/g, '')
+    .replace(/`/g, '');
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function updateGuidePanel(text) {
+  _showGuideTextMode();
+  const html = escHtml(text)
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\n/g, '<br>');
+  document.getElementById('guide-text-panel').innerHTML = `<div style="padding:2px 0">${html}</div>`;
+}
+
+// ── 가이드 패널: 서류 전용 ────────────────────────────────────────
+// 가이드 패널은 항상 서류 미리보기만 표시. 텍스트 패널은 초기 placeholder 용도로만.
+function _showGuideDocMode() {
+  document.getElementById('guide-text-panel').style.display = 'none';
+  document.getElementById('guide-doc-panel').style.display = 'block';
+  document.getElementById('gd-nav').style.display = 'flex';
+  document.getElementById('gd-counter').style.display = 'inline-block';
+}
+function _showGuideTextMode() {
+  document.getElementById('guide-text-panel').style.display = 'block';
+  document.getElementById('guide-doc-panel').style.display = 'none';
+  document.getElementById('gd-nav').style.display = 'none';
+  document.getElementById('gd-counter').style.display = 'none';
+}
+
+// ── 키워드 기반 서류 세트 정의 ────────────────────────────────────
+const _DOC_SETS = {
+  demo1: [
+    { id: '위험고지문_ELS',        label: '① 파생결합증권(ELS) 위험고지문' },
+    { id: '고령투자자_상담일지',     label: '② 고령투자자(대리인) 상담일지' },
+    { id: '고령투자자_판매절차확인서', label: '③ 고령투자자보호를 위한 강화된 판매 절차 확인서' },
+    { id: '설명서교부_가입확인서',   label: '④ 설명서 교부 및 금융상품 가입확인서' },
+    { id: '투자자금성향_정보확인서', label: '⑤ 투자자금성향 정보확인서' },
+    { id: '파생결합증권_청약신청서', label: '⑥ 파생결합증권(ELS) 청약신청서' },
+  ],
+  demo2: [
+    { id: '위험고지문_ELB',        label: '① 주가연계파생결합사채(ELB) 위험고지문' },
+    { id: '설명서교부_가입확인서',   label: '② 설명서 교부 및 금융상품 가입확인서' },
+    { id: '투자자금성향_정보확인서', label: '③ 투자자금성향 정보확인서' },
+    { id: '파생결합증권_청약신청서', label: '④ 파생결합증권(ELB) 청약신청서' },
+  ],
+  demo4: [
+    { id: '고령투자자_상담일지',     label: '① 고령투자자(대리인) 상담일지' },
+    { id: '고령투자자_판매절차확인서', label: '② 고령투자자보호를 위한 강화된 판매 절차 확인서' },
+    { id: '설명서교부_가입확인서',   label: '③ 설명서 교부 및 금융상품 가입확인서' },
+    { id: '투자자금성향_정보확인서', label: '④ 투자자금성향 정보확인서' },
+  ],
+};
+
+// 텍스트에서 어떤 서류 세트를 보여줄지 감지
+function _detectDocSet(text) {
+  const t = text.toLowerCase();
+
+  const hasElb = t.includes('elb') || t.includes('파생결합사채') || t.includes('주가연계사채');
+  const hasEls = t.includes('els') || t.includes('파생결합증권');
+  const hasSenior = t.includes('고령') || t.includes('만 65') || t.includes('65세');
+  const hasGeneral = t.includes('일반') || t.includes('일반금융소비자');
+
+  // 우선순위: 고령투자자 감지 시 demo4 우선 반환
+  if (hasSenior) return 'demo4';
+  
+  // 제품별: ELB+일반 -> demo2, ELS -> demo1
+  if (hasElb && (hasGeneral || !hasEls)) return 'demo2';
+  if (hasEls) return 'demo1';
+
+  // 기본값
+  if (hasElb) return 'demo2';
+  return null;
+}
+
+// ── 서류 미리보기 렌더링 ──────────────────────────────────────────
+let _gdData = [], _gdIdx = 0;
+
+function _gdRender() {
+  const doc = _gdData[_gdIdx];
+  if (!doc) return;
+
+  document.getElementById('gd-doc-title').textContent = doc.label;
+  document.getElementById('gd-counter').textContent = `${_gdIdx + 1} / ${_gdData.length}`;
+  document.getElementById('gd-page-info').textContent = `${_gdIdx + 1} / ${_gdData.length}`;
+
+  const prevBtn = document.getElementById('gd-prev-btn');
+  const nextBtn = document.getElementById('gd-next-btn');
+  prevBtn.style.opacity = _gdIdx === 0 ? '0.3' : '1';
+  nextBtn.style.opacity = _gdIdx === _gdData.length - 1 ? '0.3' : '1';
+
+  const ovl = document.getElementById('gd-overlays');
+  const img = document.getElementById('gd-img');
+  ovl.innerHTML = '';
+
+  if (!doc.pages || !doc.pages.length) {
+    img.style.display = 'none';
+    ovl.innerHTML = '<div style="padding:40px;text-align:center;color:#94a3b8;font-size:12px">미리보기 없음</div>';
+    return;
+  }
+
+  const page = doc.pages[0];
+  img.style.display = 'block';
+  img.onload = () => _drawDemoBoxes(img, ovl, page.fields);
+  img.onerror = () => { img.style.display = 'none'; };
+  img.src = page.image;
+  document.getElementById('guide-doc-panel').scrollTop = 0;
+}
+
+function gdPrev() { if (_gdIdx > 0) { _gdIdx--; _gdRender(); } }
+function gdNext() { if (_gdIdx < _gdData.length - 1) { _gdIdx++; _gdRender(); } }
+
+// docSetKey: 'demo1' | 'demo2'
+async function loadGuideDocMode(docSetKey) {
+  const docs = _DOC_SETS[docSetKey];
+  if (!docs) return;
+
+  _showGuideDocMode();
+  document.getElementById('gd-doc-title').textContent = '불러오는 중…';
+  document.getElementById('gd-img').src = '';
+  document.getElementById('gd-overlays').innerHTML = '';
+  document.getElementById('gd-counter').textContent = '';
+
+  const results = await Promise.all(
+    docs.map(d =>
+      fetch(`/api/annotations/${d.id}`).then(r => r.json()).catch(() => ({ error: '오류' }))
+    )
+  );
+
+  _gdData = docs.map((d, i) => ({
+    label: d.label,
+    pages: results[i].error ? [] : (results[i].pages || []),
+  }));
+
+  _gdIdx = 0;
+  _gdRender();
+}
+
+async function sendChat() {
+  if (_isSendingChat || _chatComposing) return;
+
+  const input = document.getElementById('chat-input');
+  const msg = input.value.trim();
+  if (!msg) return;
+
+  _isSendingChat = true;
+  input.value = '';
+
+  appendChatMsg('user', msg);
+
+  // 키워드 감지 결과는 저장만 하고, 가이드는 AI 답변이 출력된 뒤 표시
+  const inputDocSet = _detectDocSet(msg);
+
+  // AI 채팅 — 실제 상담 답변 생성
+  if (!_sessionId) {
+    try { await startSession(false); } catch(e) { return; }
+  }
+
+  const pending = appendChatMsg('assistant', '...');
+  try {
+    const res = await fetch('/api/guide/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ session_id: _sessionId, message: msg }),
+    });
+    const raw = await res.text();
+    let data = {};
+    try { data = raw ? JSON.parse(raw) : {}; }
+    catch (e) {
+      throw new Error(`서버 응답 파싱 오류 (HTTP ${res.status})`);
+    }
+
+    if (!res.ok || data.error) {
+      const errMsg = data.error || `서버 오류 (HTTP ${res.status})`;
+      throw new Error(errMsg);
+    }
+
+    pending.remove();
+    appendChatMsg('assistant', data.reply);
+    // 가이드는 채팅 답변 출력 후 노출
+    const replySet = _detectDocSet(data.reply);
+    const finalSet = replySet || inputDocSet;
+    if (finalSet) loadGuideDocMode(finalSet);
+  } catch(e) {
+    pending.remove();
+    appendChatMsg('assistant', '오류가 발생했습니다.');
+  } finally {
+    _isSendingChat = false;
+  }
+}
+
+async function toggleRecording() {
+  if (_isRecording) stopRecording();
+  else await startRecording();
+}
+
+async function startRecording() {
+  if (!_sessionId) { alert('새 상담을 먼저 시작해주세요.'); return; }
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    const mimeType = MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : 'audio/mp4';
+    _mediaRecorder = new MediaRecorder(stream, { mimeType });
+    _recordedChunks = [];
+
+    _mediaRecorder.ondataavailable = (e) => {
+      if (e.data && e.data.size > 0) _recordedChunks.push(e.data);
+    };
+
+    _mediaRecorder.onstop = async () => {
+      try {
+        if (_recordedChunks.length > 0) {
+          const fullBlob = new Blob(_recordedChunks, { type: mimeType });
+          await sendVoiceChunk(fullBlob, mimeType);
+        } else {
+          appendChatMsg('assistant', '[음성이 감지되지 않았습니다]');
+        }
+      } finally {
+        _recordedChunks = [];
+      }
+    };
+
+    _mediaRecorder.start();
+    _isRecording = true;
+
+    document.getElementById('rec-status').textContent = '녹음 중';
+    document.getElementById('rec-icon').style.background = '#FCEBEB';
+    document.getElementById('rec-icon').style.color = '#A32D2D';
+    document.getElementById('rec-btn-label').textContent = '녹음 중지';
+    document.getElementById('transcript-box').style.display = 'block';
+
+    _recSeconds = 0;
+    _recTimer = setInterval(() => {
+      _recSeconds++;
+      const m = String(Math.floor(_recSeconds/60)).padStart(2,'0');
+      const s = String(_recSeconds%60).padStart(2,'0');
+      document.getElementById('rec-timer').textContent = `${m}:${s} — 녹음 중`;
+    }, 1000);
+  } catch(e) {
+    const msg = e.name === 'NotAllowedError'
+      ? '마이크 권한이 거부되었습니다.\n브라우저 주소창 옆 자물쇠(🔒) 아이콘을 클릭해 마이크 권한을 허용해 주세요.'
+      : '마이크 접근 오류: ' + e.message;
+    alert(msg);
+  }
+}
+
+function stopRecording() {
+  if (_mediaRecorder) {
+    _mediaRecorder.stop();
+    _mediaRecorder.stream.getTracks().forEach(t => t.stop());
+    _mediaRecorder = null;
+  }
+  _isRecording = false;
+  clearInterval(_recTimer);
+  document.getElementById('rec-status').textContent = '분석 중';
+  document.getElementById('rec-icon').style.background = '#FAEAE9';
+  document.getElementById('rec-icon').style.color = '#6D2B3D';
+  document.getElementById('rec-btn-label').textContent = '녹음 시작';
+  document.getElementById('rec-timer').textContent = '음성 분석 중...';
+}
+
+let _dpPages = [], _dpIdx = 0;
+
+function _dpRender() {
+  const page = _dpPages[_dpIdx];
+  if (!page) return;
+  const img = document.getElementById('doc-preview-img');
+  const overlays = document.getElementById('doc-preview-overlays');
+  const nav = document.getElementById('dp-nav');
+  const counter = document.getElementById('dp-counter');
+
+  overlays.innerHTML = '';
+  img.src = page.image;
+  img.onload = () => {
+    (page.fields || []).forEach(f => {
+      const div = document.createElement('div');
+      div.style.cssText = `position:absolute;left:${f.x*100}%;top:${f.y*100}%;width:${f.w*100}%;height:${f.h*100}%;border:2px solid ${f.color};background:${f.color}22;border-radius:3px;pointer-events:none`;
+      const lbl = document.createElement('div');
+      lbl.style.cssText = `position:absolute;top:-18px;left:0;font-size:10px;font-weight:600;color:${f.color};white-space:nowrap;background:white;padding:1px 4px;border-radius:2px`;
+      lbl.textContent = f.설명;
+      div.appendChild(lbl);
+      overlays.appendChild(div);
+    });
+  };
+  if (nav) nav.style.display = _dpPages.length > 1 ? 'flex' : 'none';
+  if (counter) counter.textContent = `${_dpIdx + 1} / ${_dpPages.length}`;
+}
+
+async function loadDocPreview(서류ID) {
+  const area = document.getElementById('doc-preview-area');
+  const empty = document.getElementById('doc-preview-empty');
+
+  if (!서류ID) {
+    area.style.display = 'none';
+    empty.style.display = 'block';
+    return;
+  }
+
+  try {
+    const res = await fetch(`/api/annotations/${서류ID}`);
+    const data = await res.json();
+    if (data.error || !data.pages?.length) return;
+
+    _dpPages = data.pages;
+    _dpIdx = 0;
+    area.style.display = 'block';
+    empty.style.display = 'none';
+    _dpRender();
+  } catch(e) {
+    console.error('미리보기 오류:', e);
+  }
+}
+
+function dpPrev() { if (_dpIdx > 0) { _dpIdx--; _dpRender(); } }
+function dpNext() { if (_dpIdx < _dpPages.length - 1) { _dpIdx++; _dpRender(); } }
+
+async function uploadAudioFile(input) {
+  const file = input.files[0];
+  if (!file) return;
+  input.value = '';
+
+  if (!_sessionId) {
+    try { await startSession(false); } catch(e) { return; }
+  }
+
+  document.getElementById('transcript-box').style.display = 'block';
+  await sendVoiceChunk(file, file.type || 'audio/mpeg');
+}
+
+async function sendVoiceChunk(blob, mimeType) {
+  if (!_sessionId) return;
+  const mime = String(mimeType || 'audio/webm').split(';')[0].trim().toLowerCase();
+  const extMap = {
+    'audio/webm': 'webm',
+    'audio/mp4': 'mp4',
+    'audio/wav': 'wav',
+    'audio/wave': 'wav',
+    'audio/x-wav': 'wav',
+    'audio/mpeg': 'mp3',
+    'audio/mp3': 'mp3',
+    'audio/ogg': 'ogg'
+  };
+  const ext = extMap[mime] || 'webm';
+  const pending = appendChatMsg('assistant', '[음성 분석 중...]');
+
+  const formData = new FormData();
+  formData.append('session_id', _sessionId);
+  formData.append('audio', blob, `chunk.${ext}`);
+
+  try {
+    const res = await fetch('/api/guide/voice-chunk', { method: 'POST', body: formData });
+    const raw = await res.text();
+    let data = {};
+    try { data = raw ? JSON.parse(raw) : {}; }
+    catch (e) {
+      throw new Error(`서버 응답 파싱 오류 (HTTP ${res.status})`);
+    }
+
+    if (!res.ok || data.error) {
+      const errMsg = data.error || `서버 오류 (HTTP ${res.status})`;
+      throw new Error(errMsg);
+    }
+
+    pending.remove();
+
+    if (data.transcript) {
+      _fullTranscript += ' ' + data.transcript;
+      document.getElementById('transcript-text').textContent = _fullTranscript.trim();
+      appendChatMsg('assistant', `[녹취] ${data.transcript}`);
+    }
+    if (data.guide) {
+      // AI 안내 텍스트는 채팅 버블에만 표시
+      appendChatMsg('assistant', data.guide);
+      // 가이드 패널: transcript + guide 텍스트에서 서류 키워드 감지 시 서류 세트 표시
+      const voiceText = (_fullTranscript + ' ' + data.guide);
+      const voiceSet = _detectDocSet(voiceText);
+      if (voiceSet) {
+        loadGuideDocMode(voiceSet);
+      }
+    }
+    if (!data.transcript && !data.guide) {
+      appendChatMsg('assistant', '[음성이 감지되지 않았습니다]');
+    }
+  } catch(e) {
+    pending.remove();
+    appendChatMsg('assistant', '음성 분석 오류가 발생했습니다.');
+  }
+}
+// ── 페이지 뷰어 ────────────────────────────────────────────────
+let _pvPages = [];
+let _pvIdx = 0;
+
+function openPageViewer(pages, idx) {
+  _pvPages = pages;
+  _pvIdx = idx || 0;
+  document.getElementById('page-viewer-modal').style.display = 'flex';
+  pvRender();
+}
+
+function closePageViewer() {
+  document.getElementById('page-viewer-modal').style.display = 'none';
+}
+
+function pvMove(dir) {
+  _pvIdx = Math.max(0, Math.min(_pvPages.length - 1, _pvIdx + dir));
+  pvRender();
+}
+
+function pvRender() {
+  const p = _pvPages[_pvIdx];
+  document.getElementById('pv-title').textContent = `P${p} 원본 확인`;
+  document.getElementById('pv-info').textContent = `${_pvIdx + 1} / ${_pvPages.length} 페이지 (P${p})`;
+  document.getElementById('pv-prev').disabled = _pvIdx === 0;
+  document.getElementById('pv-next').disabled = _pvIdx === _pvPages.length - 1;
+
+  const img = document.getElementById('pv-img');
+  const loading = document.getElementById('pv-loading');
+  img.style.display = 'none';
+  loading.style.display = 'block';
+  loading.textContent = '이미지 불러오는 중...';
+  img.src = `/api/page/${_jobId}/${p}?t=${Date.now()}`;
+}
+
+// DI 마크를 y좌표 기준 행별로 클러스터링
+function _clusterMarksByRow(marks, threshold = 0.022) {
+  const sorted = [...marks].sort((a, b) => a.y - b.y);
+  const clusters = [];
+  let cur = [];
+  for (const m of sorted) {
+    if (!cur.length || m.y - cur[cur.length - 1].y < threshold) {
+      cur.push(m);
+    } else {
+      clusters.push(cur);
+      cur = [m];
+    }
+  }
+  if (cur.length) clusters.push(cur);
+  return clusters;
+}
+
+// 마크 목록의 바운딩 박스 계산
+function _getBBox(marks) {
+  const xs = marks.flatMap(m => [m.x, m.x + m.w]);
+  const ys = marks.flatMap(m => [m.y, m.y + m.h]);
+  return { x: Math.min(...xs), y: Math.min(...ys),
+           w: Math.max(...xs) - Math.min(...xs),
+           h: Math.max(...ys) - Math.min(...ys) };
+}
+
+let _annErrPages = [], _annErrIdx = 0, _annErrKeys = [];
+
+function _annErrRender() {
+  const page = _annErrPages[_annErrIdx];
+  if (!page) return;
+  const img = document.getElementById('ann-err-img');
+  const overlays = document.getElementById('ann-err-overlays');
+  const nav = document.getElementById('ann-err-nav');
+  const info = document.getElementById('ann-err-page-info');
+  const prevBtn = document.getElementById('ann-err-prev');
+  const nextBtn = document.getElementById('ann-err-next');
+
+  img.parentElement.style.display = '';
+  img.src = page.image;
+  img.onerror = () => { img.parentElement.style.display = 'none'; };
+  img.onload = () => {
+    overlays.innerHTML = '';
+    (page.fields || []).forEach(f => {
+      const fid = String(f.항목ID || '').toLowerCase();
+      const fdesc = String(f.설명 || '').toLowerCase();
+      const isErr = _annErrKeys.length === 0 || _annErrKeys.some(k =>
+        k && (fid.includes(k) || k.includes(fid) || fdesc.includes(k) || k.includes(fdesc)));
+      const color = isErr ? '#DC2626' : (f.color || '#94a3b8');
+      const box = document.createElement('div');
+      box.style.cssText = `position:absolute;left:${f.x*100}%;top:${f.y*100}%;width:${f.w*100}%;height:${f.h*100}%;border:${isErr?'3px':'2px'} solid ${color};background:${color}${isErr?'1a':'11'};border-radius:4px;pointer-events:none;z-index:${isErr?10:5}`;
+      const lbl = document.createElement('div');
+      lbl.style.cssText = `position:absolute;top:-18px;left:0;font-size:10px;font-weight:700;color:${color};background:rgba(255,255,255,0.92);padding:1px 6px;border-radius:3px;white-space:nowrap`;
+      lbl.textContent = f.설명 || f.항목ID || '오류 위치';
+      box.appendChild(lbl);
+      overlays.appendChild(box);
+    });
+  };
+
+  if (_annErrPages.length > 1) {
+    nav.style.display = 'flex';
+    info.textContent = `${_annErrIdx + 1} / ${_annErrPages.length} 페이지`;
+    prevBtn.disabled = _annErrIdx === 0;
+    nextBtn.disabled = _annErrIdx === _annErrPages.length - 1;
+    prevBtn.style.opacity = prevBtn.disabled ? '0.35' : '1';
+    nextBtn.style.opacity = nextBtn.disabled ? '0.35' : '1';
+  } else {
+    nav.style.display = 'none';
+  }
+}
+
+function annErrNav(dir) {
+  const next = _annErrIdx + dir;
+  if (next >= 0 && next < _annErrPages.length) { _annErrIdx = next; _annErrRender(); }
+}
+
+async function showErrorAnnotation(docId) {
+  const r = (_lastResult?.전체_결과 || {})[docId] || {};
+  const errors = r.errors || [];
+  const diMarks = r.di_marks || [];
+  const 서류명 = (_checklist?.[docId]?.서류명) || docId;
+  const isSupplDoc = (_lastResult?.보완서류 || []).includes(docId);
+
+  const img = document.getElementById('ann-err-img');
+  const overlays = document.getElementById('ann-err-overlays');
+  const errList = document.getElementById('ann-err-list');
+  const imgWrap = img.parentElement;
+
+  document.getElementById('ann-err-title').textContent = 서류명;
+  overlays.innerHTML = '';
+
+  // ── 오류/보완 항목 목록 ──────────────────────────────────────
+  if (errors.length) {
+    errList.innerHTML = errors.map(e => `
+      <div class="ann-err-item">
+        <i class="ti ti-alert-circle" style="color:#A32D2D;font-size:16px;margin-top:1px;flex-shrink:0"></i>
+        <div>
+          <div style="font-size:13px;font-weight:600;color:#A32D2D">${e.항목}</div>
+          <div style="font-size:12px;color:var(--color-text-secondary);margin-top:2px">${e.오류}</div>
+        </div>
+      </div>`).join('');
+  } else if (isSupplDoc) {
+    errList.innerHTML = `
+      <div class="ann-err-item">
+        <i class="ti ti-info-circle" style="color:#D97706;font-size:16px;margin-top:1px;flex-shrink:0"></i>
+        <div>
+          <div style="font-size:13px;font-weight:600;color:#D97706">작성 가이드</div>
+          <div style="font-size:12px;color:var(--color-text-secondary);margin-top:2px">아래 강조된 부분을 작성해주세요</div>
+        </div>
+      </div>`;
+  }
+
+  // 0) annotation(JSON)에서 오류 항목과 매칭되는 박스를 우선 표시
+  //    (DI가 1페이지만 반환되는 경우에도 실제 기입 위치를 정확히 보여주기 위함)
+  try {
+    const annRes = await fetch(`/api/annotations/${docId}`);
+    const ann = await annRes.json();
+    const annPages = Array.isArray(ann.pages) ? ann.pages : [];
+    const errorKeys = errors.length ? errors.map(e => String(e.항목 || '').toLowerCase()) : null;
+
+    let matchedPage = null;
+    if (errorKeys && errorKeys.length > 0) {
+      matchedPage = annPages.find(p =>
+        (p.fields || []).some(f => {
+          const fid = String(f.항목ID || '').toLowerCase();
+          const fdesc = String(f.설명 || '').toLowerCase();
+          return errorKeys.some(k => k && (
+            fid.includes(k) || k.includes(fid) ||
+            fdesc.includes(k) || k.includes(fdesc)
+          ));
+        })
+      );
+    } else if ((isSupplDoc || !errorKeys) && annPages.length > 0) {
+      matchedPage = annPages.find(p => (p.fields||[]).length > 0) || annPages[0];
+    }
+
+    if (!matchedPage) {
+      // 매칭 없으면 필드가 있는 첫 페이지라도 보여줌
+      matchedPage = annPages.find(p => (p.fields||[]).length > 0) || null;
+    }
+
+    if (matchedPage) {
+      // 모든 페이지를 nav로 순회 가능하게 저장
+      _annErrPages = annPages.filter(p => p.image);
+      _annErrKeys = errorKeys || [];
+      _annErrIdx = _annErrPages.indexOf(matchedPage);
+      if (_annErrIdx < 0) _annErrIdx = 0;
+      _annErrRender();
+      document.getElementById('ann-err-modal').style.display = 'flex';
+      return;
+    }
+  } catch (e) {
+    // annotation 조회 실패 시 DI 렌더링으로 폴백
+  }
+
+  if (!errors.length && !isSupplDoc) return;
+
+  // ── DI 그룹 박스 오버레이 ────────────────────────────
+  const cl = await fetchChecklist();
+  const pages = _lastResult?.서류별_페이지?.[docId] || [];
+  const pageNum = pages[0];
+  const page1Marks = diMarks.filter(m => m.page === 1);
+
+  if (_jobId && pageNum && page1Marks.length > 0) {
+    imgWrap.style.display = '';
+    img.src = `/api/page/${_jobId}/${pageNum}`;
+    img.onerror = () => { imgWrap.style.display = 'none'; };
+    img.onload = () => {
+      overlays.innerHTML = '';
+
+      const groups = cl?.[docId]?.체크그룹 || [];
+      const failedIds = new Set(errors.map(e => e.항목));
+      const clusters = _clusterMarksByRow(page1Marks);
+
+      // 체크리스트 그룹 ↔ DI 클러스터 매칭 (순서 + 항목 수)
+      const groupToCluster = new Map();
+      let clIdx = 0;
+      for (const group of groups) {
+        const need = (group.항목 || []).length;
+        let found = -1;
+        for (let i = clIdx; i < clusters.length; i++) {
+          if (Math.abs(clusters[i].length - need) <= 1) { found = i; break; }
+        }
+        if (found === -1) continue;
+        groupToCluster.set(group.그룹ID, clusters[found]);
+        clIdx = found + 1;
+      }
+
+      // ① 매칭된 그룹의 개별 마크 표시 (체크=녹색, 미체크=회색)
+      const renderedMarks = new Set();
+      groupToCluster.forEach(clusterMarks => {
+        clusterMarks.forEach(m => {
+          renderedMarks.add(m);
+          const div = document.createElement('div');
+          const color = m.state === 'selected' ? '#27AE60' : '#94a3b8';
+          div.style.cssText = `position:absolute;left:${m.x*100}%;top:${m.y*100}%;
+            width:${m.w*100}%;height:${m.h*100}%;
+            border:2px solid ${color};background:${color}44;
+            border-radius:2px;pointer-events:none;z-index:5;`;
+          overlays.appendChild(div);
+        });
+      });
+
+      // ② 매칭 안 된 마크도 흐리게 표시
+      page1Marks.forEach(m => {
+        if (renderedMarks.has(m)) return;
+        const div = document.createElement('div');
+        div.style.cssText = `position:absolute;left:${m.x*100}%;top:${m.y*100}%;
+          width:${m.w*100}%;height:${m.h*100}%;
+          border:1px solid #cbd5e133;border-radius:2px;pointer-events:none;`;
+        overlays.appendChild(div);
+      });
+
+      // ③ 오류 그룹 → 섹션 전체에 빨간 박스 + 라벨
+      groups.forEach(group => {
+        if (!failedIds.has(group.그룹ID)) return;
+        const clusterMarks = groupToCluster.get(group.그룹ID);
+        if (!clusterMarks) return;
+
+        const bb = _getBBox(clusterMarks);
+        const PAD_X = 0.018, PAD_Y = 0.01;
+
+        const box = document.createElement('div');
+        box.style.cssText = `position:absolute;
+          left:${Math.max(0, bb.x - PAD_X) * 100}%;
+          top:${Math.max(0, bb.y - PAD_Y) * 100}%;
+          width:${Math.min(1, bb.w + PAD_X * 2) * 100}%;
+          height:${Math.min(1, bb.h + PAD_Y * 2) * 100}%;
+          border:3px solid #DC2626;
+          background:rgba(220,38,38,0.07);
+          border-radius:5px;pointer-events:none;z-index:10;`;
+        overlays.appendChild(box);
+
+        const err = errors.find(e => e.항목 === group.그룹ID);
+        const label = document.createElement('div');
+        label.style.cssText = `position:absolute;
+          left:${Math.max(0, bb.x - PAD_X) * 100}%;
+          top:${Math.max(0, bb.y - PAD_Y) * 100}%;
+          transform:translateY(-100%);
+          background:#DC2626;color:#fff;
+          font-size:11px;font-weight:700;
+          padding:2px 7px;border-radius:3px 3px 0 0;
+          white-space:nowrap;pointer-events:none;z-index:11;`;
+        label.textContent = `⚠ ${group.그룹ID}${err ? ' — ' + err.오류 : ''}`;
+        overlays.appendChild(label);
+      });
+
+      // 범례
+      const legend = document.createElement('div');
+      legend.style.cssText = 'position:absolute;top:6px;right:6px;background:rgba(255,255,255,0.95);border-radius:6px;padding:6px 10px;font-size:11px;display:flex;flex-direction:column;gap:4px;box-shadow:0 1px 6px rgba(0,0,0,0.15);z-index:20';
+      legend.innerHTML = `
+        <div style="display:flex;align-items:center;gap:5px"><span style="display:inline-block;width:12px;height:12px;border:2px solid #27AE60;background:#27AE6044;border-radius:2px"></span> 체크됨</div>
+        <div style="display:flex;align-items:center;gap:5px"><span style="display:inline-block;width:12px;height:12px;border:2px solid #94a3b8;background:#94a3b844;border-radius:2px"></span> 미체크</div>
+        <div style="display:flex;align-items:center;gap:5px"><span style="display:inline-block;width:32px;height:8px;border:2.5px solid #DC2626;background:rgba(220,38,38,0.1);border-radius:2px"></span> 오류 구역</div>
+      `;
+      overlays.appendChild(legend);
+    };
+  } else {
+    // DI 마크가 없는 경우: static annotation(JSON) 기반으로 오류 위치 표시
+    try {
+      const annRes = await fetch(`/api/annotations/${docId}`);
+      const ann = await annRes.json();
+      const annPages = Array.isArray(ann.pages) ? ann.pages : [];
+
+      if (!annPages.length) {
+        imgWrap.style.display = 'none';
+      } else {
+        const errorKeys = errors.map(e => String(e.항목 || '').toLowerCase());
+
+        // 오류 항목과 annotation field를 최대한 느슨하게 매칭
+        const pageWithMatch = annPages.find(p =>
+          (p.fields || []).some(f => {
+            const fid = String(f.항목ID || '').toLowerCase();
+            const fdesc = String(f.설명 || '').toLowerCase();
+            return errorKeys.some(k => k && (fid.includes(k) || k.includes(fid) || fdesc.includes(k) || k.includes(fdesc)));
+          })
+        ) || annPages.find(p => (p.fields || []).length > 0) || annPages[0];
+
+        imgWrap.style.display = '';
+        img.src = pageWithMatch.image;
+        img.onerror = () => { imgWrap.style.display = 'none'; };
+        img.onload = () => {
+          overlays.innerHTML = '';
+
+          (pageWithMatch.fields || []).forEach(f => {
+            const fieldId = String(f.항목ID || '').toLowerCase();
+            const fieldDesc = String(f.설명 || '').toLowerCase();
+            const isErrorField = errorKeys.some(k => k && (fieldId.includes(k) || k.includes(fieldId) || fieldDesc.includes(k) || k.includes(fieldDesc)));
+
+            const color = isErrorField ? '#DC2626' : (f.color || '#94a3b8');
+            const box = document.createElement('div');
+            box.style.cssText = `position:absolute;left:${f.x*100}%;top:${f.y*100}%;width:${f.w*100}%;height:${f.h*100}%;border:${isErrorField ? '3px' : '2px'} solid ${color};background:${isErrorField ? 'rgba(220,38,38,0.10)' : `${color}22`};border-radius:4px;pointer-events:none;z-index:${isErrorField ? 10 : 5};`;
+
+            const lbl = document.createElement('div');
+            lbl.style.cssText = `position:absolute;top:-18px;left:0;font-size:10px;font-weight:700;color:${color};background:rgba(255,255,255,0.92);padding:1px 6px;border-radius:3px;white-space:nowrap;`;
+            lbl.textContent = f.설명 || f.항목ID || '오류 위치';
+            box.appendChild(lbl);
+            overlays.appendChild(box);
+          });
+        };
+      }
+    } catch (e) {
+      imgWrap.style.display = 'none';
+    }
+  }
+
+  document.getElementById('ann-err-modal').style.display = 'flex';
+}
+
+let _gpPages = [], _gpIdx = 0;
+
+function _gpRender() {
+  const page = _gpPages[_gpIdx];
+  if (!page) return;
+  const img = document.getElementById('gp-img');
+  const overlays = document.getElementById('gp-overlays');
+  const nav = document.getElementById('gp-nav');
+  const counter = document.getElementById('gp-counter');
+
+  overlays.innerHTML = '';
+  img.src = page.image;
+  img.onload = () => {
+    (page.fields || []).forEach(f => {
+      const div = document.createElement('div');
+      div.style.cssText = `position:absolute;left:${f.x*100}%;top:${f.y*100}%;width:${f.w*100}%;height:${f.h*100}%;border:2px solid ${f.color};background:${f.color}22;border-radius:3px;pointer-events:none`;
+      const lbl = document.createElement('div');
+      lbl.style.cssText = `position:absolute;top:-18px;left:0;font-size:10px;font-weight:600;color:${f.color};white-space:nowrap;background:white;padding:1px 4px;border-radius:2px`;
+      lbl.textContent = f.설명;
+      div.appendChild(lbl);
+      overlays.appendChild(div);
+    });
+  };
+  if (nav) nav.style.display = _gpPages.length > 1 ? 'flex' : 'none';
+  if (counter) counter.textContent = `${_gpIdx + 1} / ${_gpPages.length}`;
+}
+
+async function showDocPreview(docId, docName) {
+  try {
+    const res = await fetch(`/api/annotations/${docId}`);
+    const data = await res.json();
+    if (data.error || !data.pages?.length) return;
+    _gpPages = data.pages;
+    _gpIdx = 0;
+    document.getElementById('gp-title').textContent = docName;
+    _gpRender();
+    document.getElementById('guide-preview-modal').style.display = 'flex';
+  } catch(e) { console.error(e); }
+}
+
+function gpPrev() { if (_gpIdx > 0) { _gpIdx--; _gpRender(); } }
+function gpNext() { if (_gpIdx < _gpPages.length - 1) { _gpIdx++; _gpRender(); } }
+
+// ── ELS 데모 ─────────────────────────────────────────────────────
+const _ELS_DEMO_DOCS = [
+  { id: '위험고지문_ELS',          label: '① 파생결합증권(ELS) 위험고지문' },
+  { id: '고령투자자_상담일지',       label: '② 고령투자자(대리인) 상담일지' },
+  { id: '설명서교부_가입확인서',     label: '③ 설명서 교부 및 금융상품 가입확인서' },
+  { id: '투자자금성향_정보확인서',   label: '④ 투자자금성향 정보확인서' },
+];
+
+function _drawDemoBoxes(imgEl, ovlEl, fields) {
+  ovlEl.innerHTML = '';
+  (fields || []).forEach(f => {
+    const box = document.createElement('div');
+    box.style.cssText = `position:absolute;left:${f.x*100}%;top:${f.y*100}%;width:${f.w*100}%;height:${f.h*100}%;border:2.5px solid ${f.color};background:${f.color}20;border-radius:4px;pointer-events:none;box-sizing:border-box`;
+    const lbl = document.createElement('div');
+    lbl.style.cssText = `position:absolute;top:3px;left:4px;font-size:9px;font-weight:700;color:${f.color};background:rgba(255,255,255,0.88);padding:1px 5px;border-radius:3px;white-space:nowrap;letter-spacing:0.02em`;
+    lbl.textContent = f.설명;
+    box.appendChild(lbl);
+    ovlEl.appendChild(box);
+  });
+}
+
+async function runElsDemo() {
+  const modal = document.getElementById('els-demo-modal');
+  modal.style.display = 'flex';
+  modal.scrollTop = 0;
+
+  // Show loading state in each panel
+  _ELS_DEMO_DOCS.forEach((_, i) => {
+    const img = document.getElementById(`eds-img-${i}`);
+    const ovl = document.getElementById(`eds-ovl-${i}`);
+    if (img) { img.src = ''; img.style.display = 'none'; }
+    if (ovl) ovl.innerHTML = '<div style="height:200px;display:flex;align-items:center;justify-content:center;color:#94a3b8;font-size:12px">불러오는 중…</div>';
+  });
+
+  // Fetch all 4 annotation sets in parallel
+  const results = await Promise.all(
+    _ELS_DEMO_DOCS.map(d =>
+      fetch(`/api/annotations/${d.id}`).then(r => r.json()).catch(() => ({ error: '오류' }))
+    )
+  );
+
+  results.forEach((data, i) => {
+    const img = document.getElementById(`eds-img-${i}`);
+    const ovl = document.getElementById(`eds-ovl-${i}`);
+    if (!img || !ovl) return;
+
+    if (data.error || !data.pages?.length) {
+      ovl.innerHTML = `<div style="height:200px;display:flex;align-items:center;justify-content:center;color:#94a3b8;font-size:12px">${data.error || '미리보기 없음'}</div>`;
+      return;
+    }
+
+    const page = data.pages[0];
+    ovl.innerHTML = '';
+    img.style.display = 'block';
+    img.onload = () => _drawDemoBoxes(img, ovl, page.fields);
+    img.onerror = () => { img.style.display = 'none'; ovl.innerHTML = '<div style="height:200px;display:flex;align-items:center;justify-content:center;color:#94a3b8;font-size:12px">이미지 없음</div>'; };
+    img.src = page.image;
+  });
+}
+</script>
+
+<!-- 페이지 뷰어 모달 -->
+<div id="page-viewer-modal" onclick="if(event.target===this)closePageViewer()"
+  style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:300;align-items:center;justify-content:center;padding:20px">
+  <div style="background:white;border-radius:var(--border-radius-lg);width:100%;max-width:600px;max-height:92vh;display:flex;flex-direction:column;overflow:hidden">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:0.5px solid var(--color-border-tertiary);flex-shrink:0">
+      <div style="font-size:14px;font-weight:600;color:var(--color-text-primary)" id="pv-title">페이지 보기</div>
+      <button onclick="closePageViewer()" style="background:none;border:none;font-size:22px;cursor:pointer;color:var(--color-text-secondary);line-height:1;padding:0 4px">&times;</button>
+    </div>
+    <div style="flex:1;overflow-y:auto;padding:16px;text-align:center">
+      <div id="pv-loading" style="padding:40px;color:var(--color-text-tertiary);font-size:13px">이미지 불러오는 중...</div>
+      <img id="pv-img" style="display:none;max-width:100%;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md)" onload="document.getElementById('pv-loading').style.display='none';this.style.display='block'" onerror="document.getElementById('pv-loading').textContent='이미지를 불러올 수 없습니다'">
+    </div>
+    <div style="padding:12px 18px;border-top:0.5px solid var(--color-border-tertiary);display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
+      <button id="pv-prev" onclick="pvMove(-1)" class="btn-s" style="width:auto;padding:6px 14px;font-size:13px"><i class="ti ti-chevron-left"></i> 이전</button>
+      <span id="pv-info" style="font-size:12px;color:var(--color-text-secondary)"></span>
+      <button id="pv-next" onclick="pvMove(1)" class="btn-s" style="width:auto;padding:6px 14px;font-size:13px">다음 <i class="ti ti-chevron-right"></i></button>
+    </div>
+  </div>
+</div>
+
+<!-- 오류 위치 annotation 모달 -->
+<div id="ann-err-modal" onclick="if(event.target===this)this.style.display='none'"
+  style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:400;align-items:center;justify-content:center;padding:20px">
+  <div style="background:white;border-radius:14px;width:100%;max-width:820px;max-height:92vh;display:flex;flex-direction:column;overflow:hidden">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:18px 24px;border-bottom:0.5px solid var(--color-border-tertiary);flex-shrink:0">
+      <div style="font-size:16px;font-weight:700;color:var(--color-text-primary)" id="ann-err-title"></div>
+      <button onclick="document.getElementById('ann-err-modal').style.display='none'"
+        style="background:none;border:none;font-size:26px;cursor:pointer;color:var(--color-text-secondary);line-height:1">&times;</button>
+    </div>
+    <div style="flex:1;overflow-y:auto;padding:20px">
+      <div style="position:relative;display:inline-block;width:100%;margin-bottom:12px">
+        <img id="ann-err-img" style="width:100%;display:block;border:0.5px solid var(--color-border-secondary);border-radius:10px">
+        <div id="ann-err-overlays" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none"></div>
+      </div>
+      <div id="ann-err-nav" style="display:none;align-items:center;justify-content:space-between;margin-bottom:14px;gap:8px">
+        <button id="ann-err-prev" onclick="annErrNav(-1)"
+          style="padding:5px 14px;border:0.5px solid var(--color-border-secondary);border-radius:6px;background:white;cursor:pointer;font-size:12px;color:var(--color-text-secondary)">← 이전</button>
+        <span id="ann-err-page-info" style="font-size:12px;color:var(--color-text-secondary)"></span>
+        <button id="ann-err-next" onclick="annErrNav(1)"
+          style="padding:5px 14px;border:0.5px solid var(--color-border-secondary);border-radius:6px;background:white;cursor:pointer;font-size:12px;color:var(--color-text-secondary)">다음 →</button>
+      </div>
+      <div style="font-size:12px;font-weight:600;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:12px">보완 필요 항목</div>
+      <div id="ann-err-list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- 서류 미리보기 모달 -->
+<div id="guide-preview-modal" onclick="if(event.target===this)this.style.display='none'"
+  style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:200;align-items:center;justify-content:center;padding:20px">
+  <div style="background:white;border-radius:var(--border-radius-lg);max-width:580px;width:100%;max-height:92vh;overflow-y:auto;padding:20px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+      <div style="font-size:14px;font-weight:500" id="gp-title"></div>
+      <button onclick="document.getElementById('guide-preview-modal').style.display='none'"
+        style="background:none;border:none;font-size:22px;cursor:pointer;color:var(--color-text-secondary);line-height:1">&times;</button>
+    </div>
+    <div style="position:relative;display:inline-block;width:100%">
+      <img id="gp-img" style="width:100%;display:block;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md)">
+      <div id="gp-overlays" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none"></div>
+    </div>
+    <!-- 다중 페이지 네비게이션 -->
+    <div id="gp-nav" style="display:none;align-items:center;justify-content:center;gap:12px;margin-top:10px">
+      <button onclick="gpPrev()" style="background:#f1f5f9;border:none;border-radius:6px;padding:5px 14px;font-size:13px;cursor:pointer">← 이전</button>
+      <span id="gp-counter" style="font-size:12px;color:var(--color-text-secondary)"></span>
+      <button onclick="gpNext()" style="background:#f1f5f9;border:none;border-radius:6px;padding:5px 14px;font-size:13px;cursor:pointer">다음 →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ELS 서류 안내 데모 모달 -->
+<div id="els-demo-modal" onclick="if(event.target===this)this.style.display='none'"
+  style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.72);z-index:600;align-items:flex-start;justify-content:center;padding:24px;overflow-y:auto">
+  <div style="background:white;border-radius:16px;width:100%;max-width:1160px;margin:auto;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.25)">
+
+    <!-- 헤더 -->
+    <div style="padding:22px 28px;border-bottom:1px solid #e2e8f0;display:flex;align-items:flex-start;justify-content:space-between;gap:16px">
+      <div>
+        <div style="font-size:18px;font-weight:700;color:#0f172a;letter-spacing:-0.3px">ELS 청약 필수 서류 작성 가이드</div>
+        <div style="font-size:13px;color:#64748b;margin-top:3px">AI가 상담 대화에서 추출한 정보를 바탕으로 각 서류의 필수 작성 위치를 표시합니다</div>
+      </div>
+      <button onclick="document.getElementById('els-demo-modal').style.display='none'"
+        style="background:none;border:none;font-size:28px;cursor:pointer;color:#94a3b8;line-height:1;flex-shrink:0;padding:0 4px">&times;</button>
+    </div>
+
+    <!-- 고객 발화 + 추출 정보 -->
+    <div style="padding:16px 28px;background:#f8fafc;border-bottom:1px solid #e2e8f0">
+      <div style="font-size:11px;font-weight:600;color:#94a3b8;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:8px">고객 상담 내용</div>
+      <div style="font-size:13px;color:#374151;background:white;padding:11px 16px;border-radius:8px;border:1px solid #e2e8f0;line-height:1.7;font-style:italic">
+        "ELS 청약하려고 합니다. 배당이나 이자 수준의 수익을 원하고, 원금보전이 중요합니다. 손실은 20% 정도까지 감내할 수 있고, 투자 기간은 2~3년입니다. 투자권유는 받겠습니다."
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;align-items:center">
+        <span style="font-size:11px;font-weight:600;color:#94a3b8;text-transform:uppercase;letter-spacing:0.05em;margin-right:4px">AI 추출</span>
+        <span style="background:#EFF6FF;color:#1d4ed8;border:1px solid #bfdbfe;border-radius:20px;padding:3px 11px;font-size:12px;font-weight:500">투자목적: 배당·이자 수준</span>
+        <span style="background:#EFF6FF;color:#1d4ed8;border:1px solid #bfdbfe;border-radius:20px;padding:3px 11px;font-size:12px;font-weight:500">손실감내: 최대 20%</span>
+        <span style="background:#EFF6FF;color:#1d4ed8;border:1px solid #bfdbfe;border-radius:20px;padding:3px 11px;font-size:12px;font-weight:500">투자기간: 2~3년</span>
+        <span style="background:#EFF6FF;color:#1d4ed8;border:1px solid #bfdbfe;border-radius:20px;padding:3px 11px;font-size:12px;font-weight:500">투자권유: 희망</span>
+        <span style="background:#F0FDF4;color:#166534;border:1px solid #bbf7d0;border-radius:20px;padding:3px 11px;font-size:12px;font-weight:500">원금보전: 중요</span>
+      </div>
+    </div>
+
+    <!-- 범례 -->
+    <div style="padding:10px 28px;background:#f8fafc;border-bottom:1px solid #e2e8f0;display:flex;gap:20px;align-items:center">
+      <span style="font-size:11px;font-weight:600;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em">범례</span>
+      <span style="font-size:12px;display:flex;align-items:center;gap:5px"><span style="display:inline-block;width:13px;height:13px;background:#E53935;border-radius:2px;flex-shrink:0"></span>필수 기재</span>
+      <span style="font-size:12px;display:flex;align-items:center;gap:5px"><span style="display:inline-block;width:13px;height:13px;background:#1565C0;border-radius:2px;flex-shrink:0"></span>날짜</span>
+      <span style="font-size:12px;display:flex;align-items:center;gap:5px"><span style="display:inline-block;width:13px;height:13px;background:#2E7D32;border-radius:2px;flex-shrink:0"></span>서명</span>
+    </div>
+
+    <!-- 4개 서류 그리드 -->
+    <div style="padding:24px 28px;display:grid;grid-template-columns:1fr 1fr;gap:24px">
+
+      <!-- ① 위험고지문_ELS -->
+      <div>
+        <div style="font-size:13px;font-weight:600;color:#1e293b;margin-bottom:10px;display:flex;align-items:center;gap:6px">
+          <span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;background:#6D2B3D;color:white;border-radius:50%;font-size:10px;font-weight:700;flex-shrink:0">1</span>
+          파생결합증권(ELS) 위험고지문
+        </div>
+        <div style="position:relative;display:inline-block;width:100%;border:1px solid #e2e8f0;border-radius:10px;overflow:hidden;background:#f8fafc">
+          <img id="eds-img-0" style="width:100%;display:block">
+          <div id="eds-ovl-0" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none"></div>
+        </div>
+      </div>
+
+      <!-- ② 파생결합증권_청약신청서 -->
+      <div>
+        <div style="font-size:13px;font-weight:600;color:#1e293b;margin-bottom:10px;display:flex;align-items:center;gap:6px">
+          <span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;background:#6D2B3D;color:white;border-radius:50%;font-size:10px;font-weight:700;flex-shrink:0">2</span>
+          고령투자자(대리인) 상담일지
+        </div>
+        <div style="position:relative;display:inline-block;width:100%;border:1px solid #e2e8f0;border-radius:10px;overflow:hidden;background:#f8fafc">
+          <img id="eds-img-1" style="width:100%;display:block">
+          <div id="eds-ovl-1" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none"></div>
+        </div>
+      </div>
+
+      <!-- ③ 설명서교부_가입확인서 -->
+      <div>
+        <div style="font-size:13px;font-weight:600;color:#1e293b;margin-bottom:10px;display:flex;align-items:center;gap:6px">
+          <span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;background:#6D2B3D;color:white;border-radius:50%;font-size:10px;font-weight:700;flex-shrink:0">3</span>
+          설명서 교부 및 금융상품 가입확인서
+        </div>
+        <div style="position:relative;display:inline-block;width:100%;border:1px solid #e2e8f0;border-radius:10px;overflow:hidden;background:#f8fafc">
+          <img id="eds-img-2" style="width:100%;display:block">
+          <div id="eds-ovl-2" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none"></div>
+        </div>
+      </div>
+
+      <!-- ④ 투자자금성향_정보확인서 -->
+      <div>
+        <div style="font-size:13px;font-weight:600;color:#1e293b;margin-bottom:10px;display:flex;align-items:center;gap:6px">
+          <span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;background:#6D2B3D;color:white;border-radius:50%;font-size:10px;font-weight:700;flex-shrink:0">4</span>
+          투자자금성향 정보확인서
+          <span style="font-size:10px;font-weight:500;color:#7c3aed;background:#ede9fe;border:1px solid #c4b5fd;border-radius:10px;padding:1px 8px;margin-left:4px">고객 답변 반영</span>
+        </div>
+        <div style="position:relative;display:inline-block;width:100%;border:1px solid #e2e8f0;border-radius:10px;overflow:hidden;background:#f8fafc">
+          <img id="eds-img-3" style="width:100%;display:block">
+          <div id="eds-ovl-3" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none"></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 푸터 -->
+    <div style="padding:14px 28px;border-top:1px solid #e2e8f0;background:#f8fafc;display:flex;align-items:center;justify-content:space-between">
+      <div style="font-size:12px;color:#94a3b8">빨간 박스 영역을 확인하여 고객과 함께 작성하세요. 날짜와 서명은 마지막에 확인합니다.</div>
+      <button onclick="document.getElementById('els-demo-modal').style.display='none'" class="btn-s" style="width:auto;padding:8px 20px;font-size:13px">닫기</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- 점검 이력 상세 모달 -->
+<div id="run-detail-modal" onclick="if(event.target===this)this.style.display='none'"
+  style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:300;align-items:center;justify-content:center;padding:20px">
+  <div style="background:white;border-radius:var(--border-radius-lg);width:100%;max-width:700px;max-height:88vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:var(--shadow-lg)">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:0.5px solid var(--color-border-tertiary);flex-shrink:0">
+      <div>
+        <div style="font-size:15px;font-weight:600;color:var(--color-text-primary)" id="run-detail-title"></div>
+        <div style="font-size:12px;color:var(--color-text-secondary);margin-top:2px" id="run-detail-meta"></div>
+      </div>
+      <button onclick="document.getElementById('run-detail-modal').style.display='none'"
+        style="background:none;border:none;font-size:22px;cursor:pointer;color:var(--color-text-secondary);line-height:1">&times;</button>
+    </div>
+    <div style="overflow-y:auto;flex:1">
+      <table style="width:100%;border-collapse:collapse;font-size:13px">
+        <thead>
+          <tr style="background:var(--color-background-secondary)">
+            <th style="padding:9px 10px;text-align:left;font-weight:500;color:var(--color-text-secondary);font-size:11px">고객</th>
+            <th style="padding:9px 10px;text-align:left;font-weight:500;color:var(--color-text-secondary);font-size:11px">상품</th>
+            <th style="padding:9px 10px;text-align:left;font-weight:500;color:var(--color-text-secondary);font-size:11px">고객군</th>
+            <th style="padding:9px 10px;text-align:center;font-weight:500;color:var(--color-text-secondary);font-size:11px">결과</th>
+            <th style="padding:9px 10px;text-align:left;font-weight:500;color:var(--color-text-secondary);font-size:11px">누락 서류</th>
+          </tr>
+        </thead>
+        <tbody id="run-detail-body"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+</body>
+</html>

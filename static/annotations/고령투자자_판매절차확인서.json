@@ -1,0 +1,21 @@
+{
+  "서류ID": "고령투자자_판매절차확인서",
+  "서류명": "고령투자자보호를 위한 강화된 판매 절차 확인서",
+  "pages": [
+    {
+      "page": 1,
+      "image": "/static/previews/고령투자자_판매절차확인서_p1.png",
+      "fields": []
+    },
+    {
+      "page": 2,
+      "image": "/static/previews/고령투자자_판매절차확인서_p2.png",
+      "fields": []
+    },
+    {
+      "page": 3,
+      "image": "/static/previews/고령투자자_판매절차확인서_p3.png",
+      "fields": []
+    }
+  ]
+}

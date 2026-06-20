@@ -1,0 +1,16 @@
+{
+  "서류ID": "가입신청서_펀드_전문",
+  "서류명": "금융투자상품 가입신청서 (펀드)",
+  "pages": [
+    {
+      "page": 1,
+      "image": "/static/previews/가입신청서_펀드_전문_p1.png",
+      "fields": []
+    },
+    {
+      "page": 2,
+      "image": "/static/previews/가입신청서_펀드_전문_p2.png",
+      "fields": []
+    }
+  ]
+}

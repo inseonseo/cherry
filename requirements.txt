@@ -1,0 +1,13 @@
+flask
+gunicorn
+python-dotenv
+Pillow
+pymupdf
+opencv-python-headless
+reportlab
+
+# Azure
+azure-identity
+azure-ai-documentintelligence
+azure-cosmos>=4.7.0
+openai>=1.50.0
