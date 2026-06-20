@@ -97,14 +97,19 @@
 
 ---
 
-## 설치 및 실행
+## 라이브 데모
 
-### 로컬 실행
+**https://docfine-app.azurewebsites.net** 에서 바로 체험할 수 있습니다.
+
+---
+
+## 개발 환경
+
+### 로컬 설치
 ```bash
 pip install -r requirements.txt
 python app.py
 ```
-http://localhost:5001 에서 접속
 
 ### 환경 변수 (.env)
 ```
